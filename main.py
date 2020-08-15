@@ -58,7 +58,7 @@ def ADBQUICKEST(PHI_U, PHI_D, PHI_R, cfl):
 
 #convection in face 'f'    
 def U_F(U, i):
-    
+
     return ( U[i+1] + U[i] ) / 2
 
 #convection in face 'g'
@@ -67,7 +67,7 @@ def U_G(U, i):
     return (U[i] + U[i-1]) / 2
 
 #approximation of value 'u' in face 'f' of node 'i'
-def u_f(u, i, beta):
+def u_f(u, i, SCHEME, param):
     
     U, D, R = 0, 0, 0
     
@@ -80,20 +80,36 @@ def u_f(u, i, beta):
     else:
         
         D = u[i]
-        R = u[i+2] if u[i+2] <= len(u[0]) else u[i+1]
+        
+        if i + 2 <= len(u) - 1:
+            
+            R = u[i+2]
+            
+        else:
+            
+            R = u[i+1]
+            
         U = u[i+1]
         
-    return FSFL(U, D, R, beta)
+    return SCHEME(U, D, R, param)
 
 #approximation of value 'u' in face 'g' of node 'i'
-def u_g(u, i, beta):
+def u_g(u, i, SCHEME, param):
     
     U, D, R = 0, 0, 0
     
     if( U_G(u, i) > 0 ):
         
         D = u[i]
-        R = u[i-2] if i - 2 >=0 else u[i-1]
+        
+        if i - 2 >=0:
+        
+            R = u[i-2]
+        
+        else:
+            
+            R = u[i-1]
+        
         U = u[i-1]
     
     else:
@@ -102,7 +118,7 @@ def u_g(u, i, beta):
         R = u[i+1]
         U = u[i]
         
-    return FSFL(U, D, R, beta)
+    return SCHEME(U, D, R, param)
 
 def apply_boundary_condition(u, uL, uR):
     
@@ -123,7 +139,7 @@ def apply_initial_condition(u, domx):
         
         u[1][i] = math.sin(2 * math.pi * x)
 
-def burges_equation_solver(nx, domx, domt, cfl, v, beta):
+def burges_equation_solver(nx, domx, domt, cfl, v, SCHEME, param):
     
     dx = (domx[-1] - domx[0]) / (nx-1)
     
@@ -139,25 +155,32 @@ def burges_equation_solver(nx, domx, domt, cfl, v, beta):
     
     t = domt[0]
     
-    log(nx, dx, dt, domx, domt, cfl, v, beta)
-    
-    plt.plot([domx[0] + i * dx for i in range(nx)], u[p])
-    
-#    while t < domt[-1]:
-#        
-#        p, q = q, p
-#        
-#        for i in range(1, len(u[p])-1):
-#            
-#            u[p][i] = ( dt * v * ( u[q][i-1] + 2 * u[q][i] + u[q][i+1] ) / (dx ** 2) )\
-#             - ( dt * ( ( U_F(u, i) * u_f(u, i, beta)) - (U_G(u, i) * u_g(u, i, beta)) ) / dx )\
-#             + u[q][i]
-#        
-#        t = t + dt
+    params_log(nx, dx, dt, domx, domt, cfl, v, param)
+        
+    while t < domt[-1]:
+        
+        p, q = q, p
+        
+        for i in range(1, len(u[p])-1):
+                
+            UF = U_F(u[q], i)
+            UG = U_G(u[q], i)
+            
+            uf = u_f(u[q], i, SCHEME, param)
+            ug = u_g(u[q], i, SCHEME, param)
+            
+            u[p][i] = ( dt * v * ( u[q][i-1] + 2 * u[q][i] + u[q][i+1] ) / (dx ** 2) )\
+             - ( dt * ( (UF * uf) - (UG * ug) ) / dx )\
+             + u[q][i]
+        
+        t = t + dt
+        
+    plt.plot([domx[0] + i * dx for i in range(nx)], u[p], '.')
     
 #generate log of params values    
-def log(nx, dx, dt, domx, domt, cfl, v, beta):
+def params_log(nx, dx, dt, domx, domt, cfl, v, param):
     
+    print("------------ PARAMS LOG ------------")
     print("nx:", nx)
     print("dx:", dx)
     print("dt:", dt)
@@ -166,16 +189,24 @@ def log(nx, dx, dt, domx, domt, cfl, v, beta):
     print("cfl(param):", cfl)
     print("cfl(real):", dt / dx)
     print("v:", v)
-    print("beta:", beta)
-
+    print("param:", param)
+    print("------------------------------------")
+        
 def main():
+    
     domx = [0, 1]
+    
     domt = [0, 0.5]
+    
     nx = 200
+    
     v = 0.1
+    
     cfl = 0.1
+    
     beta = 1;
-    burges_equation_solver(nx, domx, domt, cfl, v, beta)
+    
+    burges_equation_solver(nx, domx, domt, cfl, v, FSFL, beta)
     
 main()
         
