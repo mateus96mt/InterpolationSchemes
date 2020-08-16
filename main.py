@@ -36,8 +36,6 @@ def ADBQUICKEST(PHI_U, PHI_D, PHI_R, cfl):
     b = ( -4 + (6 *cfl) - (3 * abs(cfl)) + (cfl ** 2))\
     / ( -5 + (6 * cfl) - (3 * abs(cfl)) + (2 * (cfl **2)))
     
-    print("[a,b] = [", a, b, "]")
-
     if(PHI_U_norm >= 0 and PHI_U_norm < a):
         
         return (2 - cfl) * PHI_U_norm
@@ -140,10 +138,12 @@ def apply_initial_condition(u, domx):
         u[1][i] = math.sin(2 * math.pi * x)
 
 def burges_equation_solver(nx, domx, domt, cfl, v, SCHEME, param):
-    
+        
     dx = (domx[-1] - domx[0]) / (nx-1)
     
     dt = cfl * dx
+    
+    nt = int((domt[-1] - domt[0]) / dt) + 1
     
     u = [[0 for i in range(nx)], [1 for i in range(nx)]]
     
@@ -152,12 +152,12 @@ def burges_equation_solver(nx, domx, domt, cfl, v, SCHEME, param):
     apply_initial_condition(u, domx)
     
     p, q = 0, 1
-    
-    t = domt[0]
-    
+        
     params_log(nx, dx, dt, domx, domt, cfl, v, param)
         
-    while t < domt[-1]:
+    save_result(domx, nx, dx, u[p], 0)
+    
+    for t in range(1, 20):
         
         p, q = q, p
         
@@ -170,12 +170,19 @@ def burges_equation_solver(nx, domx, domt, cfl, v, SCHEME, param):
             ug = u_g(u[q], i, SCHEME, param)
             
             u[p][i] = ( dt * v * ( u[q][i-1] + 2 * u[q][i] + u[q][i+1] ) / (dx ** 2) )\
-             - ( dt * ( (UF * uf) - (UG * ug) ) / dx )\
+             - ( dt * 0.5 * ( (UF * uf) - (UG * ug) ) / dx )\
              + u[q][i]
+             
+        save_result(domx, nx, dx, u[p], t)
         
-        t = t + dt
-        
-    plt.plot([domx[0] + i * dx for i in range(nx)], u[p], '.')
+#plot result in time 't' and save in figure
+def save_result(domx, nx, dx, u, t):
+    plt.cla()
+    plt.clf()
+    plt.ylim([-2, 2])
+    plt.plot([domx[0] + i * dx for i in range(nx)], u, '.')
+    print('saving results/result%d.png...' % t)
+    plt.savefig('results/result%d.png' % t, dpi = 500)
     
 #generate log of params values    
 def params_log(nx, dx, dt, domx, domt, cfl, v, param):
@@ -185,7 +192,7 @@ def params_log(nx, dx, dt, domx, domt, cfl, v, param):
     print("dx:", dx)
     print("dt:", dt)
     print("domx:", domx)
-    print("domx:", domt)
+    print("domt:", domt)
     print("cfl(param):", cfl)
     print("cfl(real):", dt / dx)
     print("v:", v)
@@ -196,17 +203,17 @@ def main():
     
     domx = [0, 1]
     
-    domt = [0, 0.5]
+    domt = [0, 0.1]
     
     nx = 200
     
-    v = 0.1
+    v = 0.001
     
     cfl = 0.1
     
-    beta = 1;
+    beta = 0;
     
-    burges_equation_solver(nx, domx, domt, cfl, v, FSFL, beta)
+    burges_equation_solver(nx, domx, domt, cfl, v, ADBQUICKEST, cfl)
     
 main()
         
