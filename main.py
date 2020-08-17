@@ -161,7 +161,7 @@ def apply_initial_condition(u, domx):
         
         u[1][i] = math.sin(2 * math.pi * x)
 
-def burges_equation_solver(nx, domx, domt, cfl, v, SCHEME, param):
+def burges_equation_solver(nx, domx, domt, cfl, v, SCHEME, param, SCHEME_LABEL):
         
     dx = (domx[-1] - domx[0]) / (nx-1)
     
@@ -179,7 +179,7 @@ def burges_equation_solver(nx, domx, domt, cfl, v, SCHEME, param):
         
     params_log(nx, dx, nt, dt, domx, domt, cfl, v, param)
         
-    save_result(domx, nx, dx, u[p], 'results/initial.png')
+    save_result(domx, nx, dx, u[p], 'results/initial.png', 0, v, cfl, SCHEME_LABEL)
     
     for t in range(1, nt):
         
@@ -199,17 +199,30 @@ def burges_equation_solver(nx, domx, domt, cfl, v, SCHEME, param):
         
         if t == nt-1:
             
-            fileName = 'results/result' + '_time=' + str(domt[-1]) + '.png'
-            save_result(domx, nx, dx, u[p], fileName)
+            fileName = 'results/result'\
+            + '_time=' + str(domt[-1])\
+            + '_v=' + str(v)\
+            + '_cfl=' + str(cfl) + '.png'
+            save_result(domx, nx, dx, u[p], fileName, domt[-1], v, cfl, SCHEME_LABEL)
         
 #plot result in time 't' and save in figure
-def save_result(domx, nx, dx, u, fileName):
+def save_result(domx, nx, dx, u, fileName, time, v, cfl, label):
     
     plt.cla()
     plt.clf()
+    
+    title = 'tempo = ' + str(time)\
+            + '  v =' + str(v)\
+            + '  cfl = ' + str(cfl)
+    plt.title(title)
+    
     plt.ylim([-2, 2])
-    plt.plot([domx[0] + i * dx for i in range(nx)], u)
-    print('saving ', fileName, '...')
+    
+    plt.plot([domx[0] + i * dx for i in range(nx)], u, marker = '.', label = label)
+    plt.legend(loc = "best")
+    plt.grid(True)
+    
+    print('saving ', fileName)
     plt.savefig(str(fileName), dpi = 500)
     
 #generate log of params values    
@@ -233,32 +246,61 @@ def main():
     #domain in x direction
     domx = [0, 1]
     
-    #domain in time
-    domt = [0, 0.3]
-    
     #number of points in x direction
     nx = 200
-    
-    #viscosity
-    v = 0.001
-    
-    #number of Courant (also ADBQUICKEST param)
-    cfl = 0.1
     
     #FSFL param
     beta = 0;
     
     #TOPUS param
     alpha = 2;
+    
+    #domains in time
+    domts = [[0, 0.1], [0, 0.3], [0, 0.5]]
+    
+    #Courant numbers
+    cfls = [0.1, 0.5, 0.9]
+    
+    #viscosity numbers
+    vs = [0.001, 0.0005, 0.00025]
+    
+    
+    #-----------------------EXERCISE 2-----------------------
+    
+    for cfl in cfls:
         
-    #selected upwind scheme
-    SCHEME = FSFL
+        for domt in domts:
+            
+            #selected upwind scheme
+            SCHEME = FSFL
+            SCHEME_LABEL = 'FSFL'
     
-    #selected param for selected upwind scheme
-    param = beta
+            #selected param for selected upwind scheme
+            param = beta
+            
+            #calling solver
+            burges_equation_solver(nx, domx, domt, cfl, vs[0], SCHEME, param, SCHEME_LABEL)
     
-    #calling solver
-    burges_equation_solver(nx, domx, domt, cfl, v, SCHEME, param)
+    #--------------------------------------------------------
+    
+    #-----------------------EXERCISE 3-----------------------
+    
+    for v in vs:
+        
+        for domt in domts:
+            
+            #selected upwind scheme
+            SCHEME = FSFL
+            SCHEME_LABEL = 'FSFL'
+    
+            #selected param for selected upwind scheme
+            param = beta
+            
+            #calling solver
+            burges_equation_solver(nx, domx, domt, cfls[1], v, SCHEME, param, SCHEME_LABEL)
+    
+    #--------------------------------------------------------
+
     
 #calling main function
 main()
