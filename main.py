@@ -238,6 +238,7 @@ def save_result(domx, nx, dx, u, fileName, time, v, cfl, label, marker = '.'):
               label = label)
     plt.legend(loc = "best")
     plt.grid(True)
+    plt.tight_layout()
     
     print('saving ', fileName)
     plt.savefig(str(fileName), dpi = 500)
