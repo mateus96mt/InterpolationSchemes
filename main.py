@@ -234,6 +234,9 @@ def save_result(domx, nx, dx, u, fileName, time, v, cfl, label, marker = '.'):
     
     plt.ylim([-2, 2])
     
+    plt.xlabel('x')
+    plt.ylabel('u')
+    
     plt.plot([domx[0] + i * dx for i in range(nx)], u, marker = marker,\
               label = label)
     plt.legend(loc = "best")
@@ -246,7 +249,7 @@ def save_result(domx, nx, dx, u, fileName, time, v, cfl, label, marker = '.'):
 #generate log of params values    
 def params_log(nx, dx, nt, dt, domx, domt, cfl, v, param):
     
-    print("------------ PARAMS LOG ------------")
+    print("\n\n------------ PARAMS LOG ------------")
     print("nx:", nx)
     print("dx:", dx)
     print("nt:", nt)
