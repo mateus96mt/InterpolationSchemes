@@ -3,6 +3,7 @@
 
 import matplotlib.pyplot as plt
 import math
+import os
 
 #normalized variable
 def norm_var(PHI, PHI_D, PHI_R):
@@ -60,23 +61,29 @@ def ADBQUICKEST(PHI_U, PHI_D, PHI_R, cfl):
     b = ( -4 + (6 *cfl) - (3 * abs(cfl)) + (cfl ** 2))\
     / ( -5 + (6 * cfl) - (3 * abs(cfl)) + (2 * (cfl **2)))
     
+    PHI_F_norm = 0
+    
     if(PHI_U_norm >= 0 and PHI_U_norm < a):
         
-        return (2 - cfl) * PHI_U_norm
+        PHI_F_norm = (2 - cfl) * PHI_U_norm
     
     if(PHI_U_norm >= a and PHI_U_norm <= b):
         
-        return PHI_U_norm\
+        PHI_F_norm = PHI_U_norm\
         + 0.5 * (1 - abs(cfl)) * (1 - PHI_U_norm)\
         - (1/6) * (1 - (cfl ** 2)) * (1 - (2 * PHI_U_norm))
         
     if(PHI_U_norm > b and PHI_U_norm <= 1):
         
-        return 1 - cfl + (cfl * PHI_U_norm)
+        PHI_F_norm = 1 - cfl + (cfl * PHI_U_norm)
         
     if(PHI_U_norm < 0 or PHI_U_norm > 1):
         
-        return PHI_U_norm
+        PHI_F_norm = PHI_U_norm
+        
+    PHI_F = PHI_R + ((PHI_D - PHI_R) * PHI_F_norm)
+        
+    return PHI_F
 
 #convection in face 'f'    
 def U_F(U, i):
@@ -144,12 +151,12 @@ def u_g(u, i, SCHEME, param):
 
 def apply_boundary_condition(u, uL, uR):
     
-    u[:][0] = uL
-    u[:][-1] = uR
+    u[0] = uL
+    u[-1] = uR
     
 def apply_initial_condition(u, domx):
     
-    n = len(u[0])
+    n = len(u)
     
     d = (domx[-1] - domx[0]) / (n - 1)
     
@@ -157,59 +164,68 @@ def apply_initial_condition(u, domx):
         
         x = domx[0] + i * d
         
-        u[0][i] = math.sin(2 * math.pi * x)
+        u[i] = math.sin(2 * math.pi * x)
         
-        u[1][i] = math.sin(2 * math.pi * x)
 
-def burges_equation_solver(nx, domx, domt, cfl, v, SCHEME, param, SCHEME_LABEL):
+def burges_equation_solver(nx, dx, domx, domt, cfl, v, SCHEME, param,\
+                           SCHEME_LABEL, marker = '.', PATH = 'results/'):
         
-    dx = (domx[-1] - domx[0]) / (nx-1)
-    
+    #time discretization size
     dt = cfl * dx
     
+    #number of points in time domain
     nt = int((domt[-1] - domt[0]) / dt) + 1
     
-    u = [[0 for i in range(nx)], [1 for i in range(nx)]]
+    #matrix to store solution 'u' at time 'i' and 'i + 1'
+    M_u = [[0 for i in range(nx)], [0 for i in range(nx)]]
     
-    apply_boundary_condition(u, 0, 0)
-    
-    apply_initial_condition(u, domx)
-    
+    #index of layer in matrix 'M_u' that stores 'u' at time 'i' and 'i + 1'
     p, q = 0, 1
+    
+    apply_initial_condition(M_u[p], domx)
+    apply_initial_condition(M_u[q], domx)
+    
+    apply_boundary_condition(M_u[p], 0, 0)
+    apply_boundary_condition(M_u[q], 0, 0)
         
     params_log(nx, dx, nt, dt, domx, domt, cfl, v, param)
-        
-    save_result(domx, nx, dx, u[p], 'results/initial.png', 0, v, cfl, SCHEME_LABEL)
     
+    #loop in time
     for t in range(1, nt):
         
+        #switching index of layer in matrix 'M_u' that stores 'u'
         p, q = q, p
         
-        for i in range(1, len(u[p])-1):
+        #loop in space
+        for i in range(1, nx - 1):
                 
-            UF = U_F(u[q], i)
-            UG = U_G(u[q], i)
+            UF = U_F(M_u[q], i)
+            UG = U_G(M_u[q], i)
             
-            uf = u_f(u[q], i, SCHEME, param)
-            ug = u_g(u[q], i, SCHEME, param)
+            uf = u_f(M_u[q], i, SCHEME, param)
+            ug = u_g(M_u[q], i, SCHEME, param)
             
-            u[p][i] = ( dt * v * ( u[q][i-1] - 2 * u[q][i] + u[q][i+1] ) / (dx ** 2) )\
+            M_u[p][i] = ( dt * v * ( M_u[q][i-1] - 2 * M_u[q][i] + M_u[q][i+1] )\
+               / (dx ** 2) )\
              - ( dt * 0.5 * ( (UF * uf) - (UG * ug) ) / dx )\
-             + u[q][i]
+             + M_u[q][i]
         
+        #save result in last iteration
         if t == nt-1:
             
-            fileName = 'results/result'\
+            fileName = PATH + 'result'\
             + '_time=' + str(domt[-1])\
             + '_v=' + str(v)\
             + '_cfl=' + str(cfl) + '.png'
-            save_result(domx, nx, dx, u[p], fileName, domt[-1], v, cfl, SCHEME_LABEL)
+            save_result(domx, nx, dx, M_u[p], fileName, domt[-1], v, cfl,\
+                        SCHEME_LABEL, marker)
         
-#plot result in time 't' and save in figure
-def save_result(domx, nx, dx, u, fileName, time, v, cfl, label):
+#plot result and save in figure
+def save_result(domx, nx, dx, u, fileName, time, v, cfl, label, marker = '.'):
     
-    plt.cla()
-    plt.clf()
+    #create folder if not exist
+    if not os.path.exists(fileName.split('/')[0]):
+        os.makedirs(fileName.split('/')[0])
     
     title = 'tempo = ' + str(time)\
             + '  v =' + str(v)\
@@ -218,7 +234,8 @@ def save_result(domx, nx, dx, u, fileName, time, v, cfl, label):
     
     plt.ylim([-2, 2])
     
-    plt.plot([domx[0] + i * dx for i in range(nx)], u, marker = '.', label = label)
+    plt.plot([domx[0] + i * dx for i in range(nx)], u, marker = marker,\
+              label = label)
     plt.legend(loc = "best")
     plt.grid(True)
     
@@ -249,6 +266,9 @@ def main():
     #number of points in x direction
     nx = 200
     
+    #spacing discretization size
+    dx = (domx[-1] - domx[0]) / (nx-1)
+    
     #FSFL param
     beta = 0;
     
@@ -264,40 +284,84 @@ def main():
     #viscosity numbers
     vs = [0.001, 0.0005, 0.00025]
     
+    #plot and save initial condition
+    initial_condition = [0 for i in range(nx)]
+    apply_initial_condition(initial_condition, domx)
+    name = 'results/initial.png'
+    save_result(domx, nx, dx,\
+                initial_condition,\
+                name, 0, '-', '-', 'Condicao inicial')
+    
+    #clean plot
+    plt.cla()
+    plt.clf()
     
     #-----------------------EXERCISE 2-----------------------
+    
+    #path to save results
+    PATH = 'results/EXE2_'
+    
+    #viscosity
+    v = 0.001
     
     for cfl in cfls:
         
         for domt in domts:
             
-            #selected upwind scheme
+            #seting upwind scheme, label and parameter
             SCHEME = FSFL
             SCHEME_LABEL = 'FSFL'
-    
-            #selected param for selected upwind scheme
             param = beta
+            burges_equation_solver(nx, dx, domx, domt, cfl, v,\
+                                   SCHEME, param, SCHEME_LABEL, marker = '.',\
+                                   PATH = PATH)
             
-            #calling solver
-            burges_equation_solver(nx, domx, domt, cfl, vs[0], SCHEME, param, SCHEME_LABEL)
+            #seting upwind scheme, label and parameter
+            SCHEME = ADBQUICKEST
+            SCHEME_LABEL = 'ADBQUICKEST'
+            param = cfl
+            burges_equation_solver(nx, dx, domx, domt, cfl, v,\
+                                   SCHEME, param, SCHEME_LABEL, marker = None,\
+                                   PATH = PATH)
+            
+            #clean plot
+            plt.cla()
+            plt.clf()
     
     #--------------------------------------------------------
     
+    
     #-----------------------EXERCISE 3-----------------------
+    
+    #path to save results
+    PATH = 'results/EXE3_'
+    
+    #Courant number
+    cfl = 0.5
     
     for v in vs:
         
         for domt in domts:
             
-            #selected upwind scheme
+            #seting upwind scheme, label and parameter
             SCHEME = FSFL
             SCHEME_LABEL = 'FSFL'
-    
-            #selected param for selected upwind scheme
             param = beta
+            burges_equation_solver(nx, dx, domx, domt, cfl, v,\
+                                   SCHEME, param, SCHEME_LABEL, marker = '.',\
+                                   PATH = PATH)
             
-            #calling solver
-            burges_equation_solver(nx, domx, domt, cfls[1], v, SCHEME, param, SCHEME_LABEL)
+            #seting upwind scheme, label and parameter
+            SCHEME = ADBQUICKEST
+            SCHEME_LABEL = 'ADBQUICKEST'
+            param = cfl
+            burges_equation_solver(nx, dx, domx, domt, cfl, v,\
+                                   SCHEME, param, SCHEME_LABEL, marker = None,\
+                                   PATH = PATH)
+            
+            #clean plot
+            plt.cla()
+            plt.clf()
     
     #--------------------------------------------------------
 
