@@ -1,3 +1,6 @@
+#MATEUS TEIXEIRA MAGALHÃES - UFJF - PGMC
+#github repository: https://github.com/mateus96mt/InterpolationSchemes.git
+
 import matplotlib.pyplot as plt
 import math
 
@@ -6,6 +9,26 @@ def norm_var(PHI, PHI_D, PHI_R):
     
     return (PHI - PHI_R) / (PHI_D - PHI_R)
 
+#TOPUS upwind scheme
+def TOPUS(PHI_U, PHI_D, PHI_R, alpha):
+    
+    PHI_U_norm = norm_var(PHI_U, PHI_D, PHI_R)
+    
+    if(PHI_U_norm >=0 and PHI_U_norm<=1):
+    
+        PHI_F_norm = ( alpha * (PHI_U_norm ** 4) )\
+        + ( ((-2 * alpha) + 1) * (PHI_U_norm ** 3) )\
+        + ( (( (5 * alpha) - 10) / 4 ) * (PHI_U_norm ** 2) )\
+        + ( ( (-alpha + 10) / 4) * PHI_U_norm)
+        
+        PHI_F = PHI_R + ((PHI_D - PHI_R) * PHI_F_norm)
+        
+        return PHI_F
+    
+    else:
+        
+        return PHI_U
+
 #FSFL upwind scheme
 def FSFL(PHI_U, PHI_D, PHI_R, beta):
     
@@ -13,16 +36,17 @@ def FSFL(PHI_U, PHI_D, PHI_R, beta):
     
     if(PHI_U_norm >=0 and PHI_U_norm<=1):
     
-        PHI_F_norm = ( ( -2 * beta + 4 ) * ( PHI_U_norm ** 4 ) )\
-        + ( ( 4 * beta - 8 ) * ( PHI_U_norm ** 3 ) )\
-        + ( ( (-5 * beta + 8) / 2 ) * ( PHI_U_norm ** 2 ) )\
+        PHI_F_norm = ( ( (-2 * beta) + 4 ) * ( PHI_U_norm ** 4 ) )\
+        + ( ( (4 * beta) - 8 ) * ( PHI_U_norm ** 3 ) )\
+        + ( ( ((-5 * beta) + 8) / 2 ) * ( PHI_U_norm ** 2 ) )\
         + ( ( (beta + 2) / 2 ) * PHI_U_norm )
         
-        PHI_F = PHI_R + (PHI_D - PHI_R) * PHI_F_norm
+        PHI_F = PHI_R + ((PHI_D - PHI_R) * PHI_F_norm)
         
         return PHI_F
     
     else:
+        
         return PHI_U
     
 #ADBQUICKEST upwind scheme
@@ -153,11 +177,11 @@ def burges_equation_solver(nx, domx, domt, cfl, v, SCHEME, param):
     
     p, q = 0, 1
         
-    params_log(nx, dx, dt, domx, domt, cfl, v, param)
+    params_log(nx, dx, nt, dt, domx, domt, cfl, v, param)
         
-    save_result(domx, nx, dx, u[p], 0)
+    save_result(domx, nx, dx, u[p], 'results/initial.png')
     
-    for t in range(1, 20):
+    for t in range(1, nt):
         
         p, q = q, p
         
@@ -169,27 +193,32 @@ def burges_equation_solver(nx, domx, domt, cfl, v, SCHEME, param):
             uf = u_f(u[q], i, SCHEME, param)
             ug = u_g(u[q], i, SCHEME, param)
             
-            u[p][i] = ( dt * v * ( u[q][i-1] + 2 * u[q][i] + u[q][i+1] ) / (dx ** 2) )\
+            u[p][i] = ( dt * v * ( u[q][i-1] - 2 * u[q][i] + u[q][i+1] ) / (dx ** 2) )\
              - ( dt * 0.5 * ( (UF * uf) - (UG * ug) ) / dx )\
              + u[q][i]
-             
-        save_result(domx, nx, dx, u[p], t)
+        
+        if t == nt-1:
+            
+            fileName = 'results/result' + '_time=' + str(domt[-1]) + '.png'
+            save_result(domx, nx, dx, u[p], fileName)
         
 #plot result in time 't' and save in figure
-def save_result(domx, nx, dx, u, t):
+def save_result(domx, nx, dx, u, fileName):
+    
     plt.cla()
     plt.clf()
     plt.ylim([-2, 2])
-    plt.plot([domx[0] + i * dx for i in range(nx)], u, '.')
-    print('saving results/result%d.png...' % t)
-    plt.savefig('results/result%d.png' % t, dpi = 500)
+    plt.plot([domx[0] + i * dx for i in range(nx)], u)
+    print('saving ', fileName, '...')
+    plt.savefig(str(fileName), dpi = 500)
     
 #generate log of params values    
-def params_log(nx, dx, dt, domx, domt, cfl, v, param):
+def params_log(nx, dx, nt, dt, domx, domt, cfl, v, param):
     
     print("------------ PARAMS LOG ------------")
     print("nx:", nx)
     print("dx:", dx)
+    print("nt:", nt)
     print("dt:", dt)
     print("domx:", domx)
     print("domt:", domt)
@@ -198,22 +227,39 @@ def params_log(nx, dx, dt, domx, domt, cfl, v, param):
     print("v:", v)
     print("param:", param)
     print("------------------------------------")
-        
+
 def main():
     
+    #domain in x direction
     domx = [0, 1]
     
-    domt = [0, 0.1]
+    #domain in time
+    domt = [0, 0.3]
     
+    #number of points in x direction
     nx = 200
     
+    #viscosity
     v = 0.001
     
+    #number of Courant (also ADBQUICKEST param)
     cfl = 0.1
     
+    #FSFL param
     beta = 0;
     
-    burges_equation_solver(nx, domx, domt, cfl, v, ADBQUICKEST, cfl)
+    #TOPUS param
+    alpha = 2;
+        
+    #selected upwind scheme
+    SCHEME = FSFL
     
+    #selected param for selected upwind scheme
+    param = beta
+    
+    #calling solver
+    burges_equation_solver(nx, domx, domt, cfl, v, SCHEME, param)
+    
+#calling main function
 main()
         
