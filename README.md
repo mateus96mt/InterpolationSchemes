@@ -18,4 +18,4 @@ Instruções de uso:
     `sudo pip3 install matplotlib`
     `sudo pip3 install math`
 
-4. Abra um terminal na pasta clonada e execute o código: `python3 main.py`
+4. Abra um terminal na pasta e execute o código: `python3 main.py`
