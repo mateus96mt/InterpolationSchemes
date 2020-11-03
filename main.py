@@ -12,12 +12,77 @@ class Equation_types(enum.Enum):
     
     Burges = 'burges'
     Boundary_layer = 'boundary_layer'
+    Linear_advection = 'linear_advection'
    
 #-----------------------------------ANALITIC SOLUTIONS------------------------
 
 def analitic_boundary_layer_equation(x, v):
     
     return (1 - np.exp(x / v)) / (1 - np.exp(1 / v))
+
+def u_0(x, case = 1):
+    
+    if case == 1:
+    
+        if x>=0 and x<0.2:
+            
+            return np.exp(-math.log(((x-0.15)/0.05)**2, 50))
+        
+        if x>0.3 and x<0.4:
+            
+            return 1
+        
+        if x>0.5 and x<0.55:
+            
+            return 20.0*x-10.0
+        
+        if x>=0.55 and x<0.66:
+            
+            return -20*x + 12
+        
+        if x>0.7 and x<0.8:
+            
+            return math.sqrt(1 - (((x-0.75)/0.05)**2))
+        
+        return 0
+
+    if case == 2:
+        
+        if x>=0 and x<=0.2:
+            
+            return 1
+        
+        if x>0.2 and x<=0.4:
+            
+            return 4*x-0.6
+        
+        if x>0.4 and x<=0.6:
+            
+            return -4*x + 2.6
+        
+        if x>0.6 and x<=0.8:
+            
+            return 1
+        
+        return 0
+    
+    if case == 3:
+        
+        if x>=-1 and x<=-1/3:
+            
+            return -x*np.sin(3*np.pi*(x**2)/2.0)
+            
+        if x>-1/3 and x<1/3:
+            
+            return abs(np.sin(2*np.pi*x))
+        
+        if x>=1/3 and x<=1:
+            
+            return 2*x - 1.0 - (1/6)*np.sin(3*np.pi*x)
+
+def analitic_linear_advection(x, u_0, t, a, case = 1):
+    
+    return u_0(x - a*t, case)
 
 #-----------------------------------------------------------------------------
 
@@ -187,6 +252,10 @@ def apply_initial_condition(u, domx, equation_type =Equation_types.Burges):
         if equation_type == Equation_types.Boundary_layer:
             
             u[i] = 0
+            
+        if equation_type == Equation_types.Linear_advection:
+            
+            u[i] = u_0(x)
         
 
 def advection_difusion_equation_solver(nx, dx, domx, domt, cfl, v, SCHEME, param, \
@@ -263,6 +332,10 @@ def advection_difusion_equation_solver(nx, dx, domx, domt, cfl, v, SCHEME, param
                    / (dx ** 2) )\
                  - ( dt * a * (uf -  ug) / dx )\
                  + M_u[q][i]
+                 
+            if equation_type == Equation_types.Linear_advection:
+                
+                M_u[p][i] = - ( dt * a * (uf -  ug) / dx ) + M_u[q][i]
             
         
         #save result in last iteration
@@ -444,6 +517,7 @@ def boundary_layer_equation_test():
     
     n_v = 1
     
+    #FSFL param
     beta = 0
     
     for i in range(n_v):
@@ -472,7 +546,66 @@ def boundary_layer_equation_test():
         plt.clf()
         
         v = v / 10
+    
+def linear_advection_equation_test():
+    
+    #advection velocity
+    a = 1
+    
+    case = 2
+    
+    cfl = 0.05
+    
+    nx = 400
+    
+    v = 0.25
+    
+    domx = [-1, 1]
+    
+    domt = [0, 0.25]
+    
+    dx = (domx[-1] - domx[0]) / (nx-1)
+ 
+    PATH = 'linear_advection/'
+    
+    n_v = 1
+    
+    #FSFL param
+    beta = 0
+    
+    for i in range(n_v):
         
+        t = domt[-1]
+        
+        analitic = [analitic_linear_advection(i*dx, u_0, t, a, case = case)\
+                    for i in range(nx)]
+        
+        fileName = PATH + 'boundary_layer'\
+            + '_time=' + str(t)\
+            + '_v=' + str(v)\
+            + '_cfl=' + str(cfl)\
+            + 'case=' + str(case)\
+            + '.png'
+        
+        save_result(domx, nx, dx, analitic, fileName, t, v, cfl, 
+                'analitica', marker = None, ylimD=-0.1, ylimU=1.1)
+        
+        SCHEME = FSFL
+        SCHEME_LABEL = 'FSFL'
+        param = beta
+        
+        advection_difusion_equation_solver(nx, dx, domx, domt, cfl, v, \
+                   SCHEME, param, SCHEME_LABEL, marker = '.', \
+                   PATH = PATH, equation_type = Equation_types.Linear_advection)
+        
+        
+        #clean plot
+        plt.cla()
+        plt.clf()
+        
+        v = v / 10
+    
 #calling main function
-TRAB1_CFD_MESTRADO()
+#TRAB1_CFD_MESTRADO()
 #boundary_layer_equation_test()
+linear_advection_equation_test()
