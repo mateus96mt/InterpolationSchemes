@@ -59,18 +59,6 @@ def ADBQUICKEST(PHI_U_norm, cfl):
         PHI_F_norm = PHI_U_norm
         
     return PHI_F_norm
-
-#FIRST ORDER upwind scheme, FOU
-def FOU(u, dx, i, VEL):
-    
-    if VEL > 0.0:
-            
-        return (u[i] - u[i-1]) / dx
-    
-    else:
-        
-        return (u[i+1] - u[i]) / dx
-    
     
     
     

@@ -4,7 +4,6 @@
 import numpy as np
 import enum
 import tools
-import upwind_schemes as SCHEMES
 
 #class of equations of 'advection_difusion_equation_solver'
 class Equation_types(enum.Enum):
@@ -56,15 +55,17 @@ def u_f(u, i, SCHEME, param, VEL_F, dx):
     #using FOU when normalized variable will give us division by zero
     if (phi_d - phi_r) == 0.0 or (phi_d - phi_r) <= 1e-10:
         
-        return SCHEMES.FOU(u, dx, i, VEL_F)
+        return phi_u
     
-    PHI_U_norm = norm_var(phi_u, phi_d, phi_r)
-    
-    phi_f_norm = SCHEME(PHI_U_norm, param)
-    
-    phi_f = phi_d + ((phi_d - phi_r) * phi_f_norm)
-    
-    return phi_f
+    else:
+        
+        PHI_U_norm = norm_var(phi_u, phi_d, phi_r)
+        
+        phi_f_norm = SCHEME(PHI_U_norm, param)
+        
+        phi_f = phi_r + ((phi_d - phi_r) * phi_f_norm)
+        
+        return phi_f
 
 #approximation of value 'u' in face 'g' of node 'i'
 def u_g(u, i, SCHEME, param, VEL_G, dx):
@@ -94,15 +95,17 @@ def u_g(u, i, SCHEME, param, VEL_G, dx):
     #using FOU when normalized variable will give us division by zero
     if (phi_d - phi_r) == 0.0 or (phi_d - phi_r) <= 1e-10:
         
-        return SCHEMES.FOU(u, dx, i, VEL_G)
+        return phi_u
+    
+    else:
         
-    PHI_U_norm = norm_var(phi_u, phi_d, phi_r)
-    
-    phi_f_norm = SCHEME(PHI_U_norm, param)
-    
-    phi_f = phi_d + ((phi_d - phi_r) * phi_f_norm)
-    
-    return phi_f
+        PHI_U_norm = norm_var(phi_u, phi_d, phi_r)
+        
+        phi_f_norm = SCHEME(PHI_U_norm, param)
+        
+        phi_f = phi_r + ((phi_d - phi_r) * phi_f_norm)
+        
+        return phi_f
         
 def advection_difusion_equation_solver(nx, domx, domt, cfl, v,\
                                        initial_cond_func,\
@@ -113,7 +116,7 @@ def advection_difusion_equation_solver(nx, domx, domt, cfl, v,\
                                        equation_type = Equation_types.Burges,\
                                        a = 1,\
                                        save_step_by_step = False, clean_plot = True,\
-                                       ymin = None, ymax = None):
+                                       ymin = None, ymax = None, step_interval = 0.05):
     #spacing discretization size
     dx = (domx[-1] - domx[0]) / (nx-1)  
     
@@ -203,7 +206,7 @@ def advection_difusion_equation_solver(nx, domx, domt, cfl, v,\
                 M_u[p][i] = - ( dt * a * (uf -  ug) / dx ) + M_u[q][i]
             
         #save result in each iteration
-        if save_step_by_step:
+        if save_step_by_step and t%int(nt*step_interval)==0:
             time = t*dt
             save_solution(x_axes, M_u[p], analitic_sol_func,\
                   cfl, v, PATH, time, SCHEME_LABEL,\
@@ -237,8 +240,8 @@ def save_solution(x_axes, u, analitic_sol_func, cfl, v, PATH, time, SCHEME_LABEL
     
     if analitic_sol_func!=None:
     
-        analitic = list(analitic_sol_func(np.array(x_axes), time))        
-    
+        analitic = [analitic_sol_func(x, time) for x in x_axes]
+            
     tools.save_fig(x_axes, u, fileName, title, SCHEME_LABEL,\
                 marker = marker,\
                 xlabel = 'x', ylabel = 'y',\

@@ -70,6 +70,8 @@ def u_0(x, case = 1):
             
             return 2*x - 1.0 - (1/6)*np.sin(3*np.pi*x)
         
+        return 0
+        
 def initial_cond_func_Burges(x):
     
     return np.sin(2 * math.pi * x)
@@ -277,13 +279,13 @@ def boundary_layer_equation_test():
 def linear_advection_equation_test():
     
     #max and minimum values for plot
-    ymin = -0.5
-    ymax = 1.5
+    ymin = -1.1
+    ymax = 1.1
     
     #advection velocity
     a = 1
     
-    case = 2
+    case = 3
     
     cfl = 0.05
     
@@ -293,11 +295,11 @@ def linear_advection_equation_test():
     
     domx = [-1, 1]
     
-    domt = [0, 0.25]
+    domt = [0, 0.125]
     
     dx = (domx[-1] - domx[0]) / (nx-1)
  
-    PATH = 'linear_advection/'
+    PATH = 'linear_advection_CASE=' + str(case) + '/'
     
     n_v = 1
     
@@ -311,14 +313,14 @@ def linear_advection_equation_test():
 
     x_axes = [domx[0] + i*dx for i in range(nx)]
 
-    save_analitic = True
+    save_analitic = False
 
     if save_analitic:
 
         analitic = [analitic_linear_advection(domx[0] + i*dx, u_0, 0, a, case = case)\
                     for i in range(nx)]
         
-        fileName = 'analitic_linear_advection_case2' + PATH + 'INITIAL.png'
+        fileName = 'analitic_' + PATH + 'INITIAL.png'
         tools.save_fig(x_axes, analitic, fileName, 'analitica', 'analitica',\
                 marker = None,\
                 xlabel = 'x', ylabel = 'y',\
@@ -328,7 +330,7 @@ def linear_advection_equation_test():
         analitic = [analitic_linear_advection(domx[0] + i*dx, u_0, t, a, case = case)\
                     for i in range(nx)]
         
-        fileName = 'analitic_linear_advection_case2' + PATH + 'FINAL.png'
+        fileName = 'analitic_' + PATH + 'FINAL.png'
         tools.save_fig(x_axes, analitic, fileName, 'analitica', 'analitica',\
                 marker = None,\
                 xlabel = 'x', ylabel = 'y',\
@@ -349,9 +351,9 @@ def linear_advection_equation_test():
                                        initial_cond_func(domx[0]),\
                                        initial_cond_func(domx[-1]),\
                                        SCHEME, param,\
-                                       None,\
+                                       analitic_sol,\
                                        SCHEME_LABEL, marker = '.',\
-                                       PATH = PATH,\
+                                       PATH = SCHEME_LABEL + '=' + str(param) + '_' + PATH,\
                                        equation_type = solver.Equation_types.Linear_advection,\
                                        a = 1,\
                                        save_step_by_step = True, clean_plot = True,\
