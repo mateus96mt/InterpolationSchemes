@@ -1,3 +1,6 @@
+#MATEUS TEIXEIRA MAGALHÃƒES - UFJF - PGMC
+#github repository: https://github.com/mateus96mt/InterpolationSchemes.git
+
 import numpy as np
 import math
 import tools
@@ -282,9 +285,9 @@ def linear_advection_equation_test():
     
     case = 2
     
-    cfl = 0.5
+    cfl = 0.05
     
-    nx = 100
+    nx = 400
     
     v = 0.25
     
@@ -339,6 +342,8 @@ def linear_advection_equation_test():
         
         initial_cond_func = lambda x: initial_cond_func_Linear_Advection(x, case = case)
         
+        analitic_sol = lambda x, t: analitic_linear_advection(x, u_0, t, a, case = case)
+        
         solver.advection_difusion_equation_solver(nx, domx, domt, cfl, v,\
                                        initial_cond_func,\
                                        initial_cond_func(domx[0]),\
@@ -346,7 +351,7 @@ def linear_advection_equation_test():
                                        SCHEME, param,\
                                        None,\
                                        SCHEME_LABEL, marker = '.',\
-                                       PATH = 'results/',\
+                                       PATH = PATH,\
                                        equation_type = solver.Equation_types.Linear_advection,\
                                        a = 1,\
                                        save_step_by_step = True, clean_plot = True,\

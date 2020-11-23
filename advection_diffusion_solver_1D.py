@@ -13,6 +13,11 @@ class Equation_types(enum.Enum):
     Boundary_layer = 'boundary_layer'
     Linear_advection = 'linear_advection'
 
+#normalized variable
+def norm_var(PHI, PHI_D, PHI_R):
+    
+    return (PHI - PHI_R) / (PHI_D - PHI_R)
+
 #aproximation of convection velocity in face 'f' for Burges equation
 def U_F(U, i):
 
@@ -26,66 +31,78 @@ def U_G(U, i):
 #approximation of value 'u' in face 'f' of node 'i'
 def u_f(u, i, SCHEME, param, VEL_F, dx):
     
-    U, D, R = 0, 0, 0
+    phi_u, phi_d, phi_r = 0, 0, 0
     
     if( VEL_F > 0 ):
         
-        D = u[i+1]
-        R = u[i-1]
-        U = u[i]
+        phi_d = u[i+1]
+        phi_r = u[i-1]
+        phi_u = u[i]
     
     else:
         
-        D = u[i]
+        phi_d = u[i]
         
         if i + 2 <= len(u) - 1:
             
-            R = u[i+2]
+            phi_r = u[i+2]
             
         else:
             
-            R = u[i+1]
+            phi_r = u[i+1]
             
-        U = u[i+1]
+        phi_u = u[i+1]
     
     #using FOU when normalized variable will give us division by zero
-    if (D - R) == 0.0 or (D - R) <= 1e-10:
+    if (phi_d - phi_r) == 0.0 or (phi_d - phi_r) <= 1e-10:
         
         return SCHEMES.FOU(u, dx, i, VEL_F)
     
-    return SCHEME(U, D, R, param)
+    PHI_U_norm = norm_var(phi_u, phi_d, phi_r)
+    
+    phi_f_norm = SCHEME(PHI_U_norm, param)
+    
+    phi_f = phi_d + ((phi_d - phi_r) * phi_f_norm)
+    
+    return phi_f
 
 #approximation of value 'u' in face 'g' of node 'i'
 def u_g(u, i, SCHEME, param, VEL_G, dx):
     
-    U, D, R = 0, 0, 0
+    phi_u, phi_d, phi_r = 0, 0, 0
     
     if( VEL_G > 0 ):
         
-        D = u[i]
+        phi_d = u[i]
         
         if i - 2 >=0:
         
-            R = u[i-2]
+            phi_r = u[i-2]
         
         else:
             
-            R = u[i-1]
+            phi_r = u[i-1]
         
-        U = u[i-1]
+        phi_u = u[i-1]
     
     else:
         
-        D = u[i-1]
-        R = u[i+1]
-        U = u[i]
+        phi_d = u[i-1]
+        phi_r = u[i+1]
+        phi_u = u[i]
         
     #using FOU when normalized variable will give us division by zero
-    if (D - R) == 0.0 or (D - R) <= 1e-10:
+    if (phi_d - phi_r) == 0.0 or (phi_d - phi_r) <= 1e-10:
         
         return SCHEMES.FOU(u, dx, i, VEL_G)
         
-    return SCHEME(U, D, R, param)
+    PHI_U_norm = norm_var(phi_u, phi_d, phi_r)
+    
+    phi_f_norm = SCHEME(PHI_U_norm, param)
+    
+    phi_f = phi_d + ((phi_d - phi_r) * phi_f_norm)
+    
+    return phi_f
         
 def advection_difusion_equation_solver(nx, domx, domt, cfl, v,\
                                        initial_cond_func,\
@@ -114,6 +131,8 @@ def advection_difusion_equation_solver(nx, domx, domt, cfl, v,\
     
     #x axes
     x_axes = []
+    
+    params_log(nx, dx, nt, dt, domx, domt, cfl, v, param)
     
     #initial condition:    
     for i in range(nx):
