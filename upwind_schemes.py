@@ -28,7 +28,40 @@ def FSFL(PHI_U_norm, beta):
     else:
         
         return PHI_U_norm
+
+#EPUS upwind scheme  
+def EPUS(PHI_U_norm, lam):
     
+    if(PHI_U_norm >=0.0 and PHI_U_norm<=1.0):
+
+        return (-4 * (lam - 24.0) * (PHI_U_norm ** 8))\
+            + (16.0 * (lam - 23.0) * (PHI_U_norm ** 7))\
+            + ((528.0 - (25 * lam)) * (PHI_U_norm ** 6))\
+            + ( ((19.0 * lam) - 336.0) * (PHI_U_norm ** 5))\
+            + ((80.0 - (7.0 * lam)) * (PHI_U_norm ** 4))\
+            + (lam * (PHI_U_norm ** 3))\
+            + PHI_U_norm
+    
+    else:
+    
+        return PHI_U_norm
+
+
+def SDPUS_C1(PHI_U_norm, gamma):
+    
+    if(PHI_U_norm >=0.0 and PHI_U_norm<=1.0):
+
+        return ((-24.0 + (4 * gamma)) * (PHI_U_norm ** 6))\
+                + ((68.0 - (12.0 * gamma)) * (PHI_U_norm ** 5))\
+                + ((-64.0 + (13 * gamma)) * (PHI_U_norm ** 4))\
+                + ((20.0 - (6 * gamma)) * (PHI_U_norm ** 3))\
+                + (gamma * (PHI_U_norm ** 2))\
+                + PHI_U_norm
+    
+    else:
+    
+        return PHI_U_norm
+ 
 #ADBQUICKEST upwind scheme
 def ADBQUICKEST(PHI_U_norm, cfl):
         
@@ -59,10 +92,6 @@ def ADBQUICKEST(PHI_U_norm, cfl):
         PHI_F_norm = PHI_U_norm
         
     return PHI_F_norm
-    
-    
-    
-    
     
 
 

@@ -15,7 +15,7 @@ def generate_TVD_Harten(color='b'):
     plt.xlabel(r'$\hat{\phi}_U$', fontsize=18)
     plt.ylabel(r'$\hat{\phi}_f$', fontsize=18, rotation=0)
     plt.title('Região TVD de Harten')
-    plt.fill(x, y, color=color)
+    plt.fill(x, y, color=color, label = 'Região TVD de Harten')
     plt.plot([x[0], x[-1]], [y[0], y[-1]], color='black')
     plt.plot([x[0], x[1]], [y[0], y[1]], color='black')
     plt.plot([x[1], x[-1]], [y[1], y[-1]], color='black')
@@ -55,7 +55,11 @@ def generate_scheme_curve(TVD_color, colors, params, n,\
 
 betas = [0.0, 1.0, 2.0]
 
-alphas = [-2.0, 0.0, 2.0]
+alphas = [2.0, 2.8, 3.2]
+
+gammas = [4.0, 8.0, 12.0]
+
+lams = [16.0, 48.0, 95.0]
 
 TVD_color = 'c'
 
@@ -79,6 +83,19 @@ fileName = PATH + SCHEME_NAME + '.png'
 generate_scheme_curve(TVD_color, colors, alphas, n, param_name,\
                       SCHEME, SCHEME_NAME, fileName)
 
+param_name = r'$\gamma$'
+SCHEME = SCHEMES.SDPUS_C1
+SCHEME_NAME = 'SDPUS_C1'
+fileName = PATH + SCHEME_NAME + '.png'
+generate_scheme_curve(TVD_color, colors, gammas, n, param_name,\
+                      SCHEME, SCHEME_NAME, fileName)
+
+param_name = r'$\lambda$'
+SCHEME = SCHEMES.EPUS
+SCHEME_NAME = 'EPUS'
+fileName = PATH + SCHEME_NAME + '.png'
+generate_scheme_curve(TVD_color, colors, lams, n, param_name,\
+                      SCHEME, SCHEME_NAME, fileName)
 
 
 
