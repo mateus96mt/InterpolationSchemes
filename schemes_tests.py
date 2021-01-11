@@ -19,7 +19,25 @@ def generate_TVD_Harten(color='b'):
     plt.plot([x[0], x[-1]], [y[0], y[-1]], color='black')
     plt.plot([x[0], x[1]], [y[0], y[1]], color='black')
     plt.plot([x[1], x[-1]], [y[1], y[-1]], color='black')
+    plt.tight_layout()
     plt.savefig('SCHEMES_TESTS/TVD_Harten.png', dpi=100)
+    
+    
+def generate_CBC(color='b'):
+    
+    x, y, = [0.0, 1.0, 0.0], [0.0, 1.0, 1.0]
+
+    plt.figure(figsize=(8, 8))
+    plt.axis('equal')
+    plt.xlabel(r'$\hat{\phi}_U$', fontsize=18)
+    plt.ylabel(r'$\hat{\phi}_f$', fontsize=18, rotation=0)
+    plt.title('Região CBC')
+    plt.fill(x, y, color=color, label = 'Região CBC')
+    plt.plot([x[0], x[-1]], [y[0], y[-1]], color='black')
+    plt.plot([x[0], x[1]], [y[0], y[1]], color='black')
+    plt.plot([x[1], x[-1]], [y[1], y[-1]], color='black')
+    plt.tight_layout()
+    plt.savefig('SCHEMES_TESTS/CBC.png', dpi=100)
 
 def generate_scheme_curve(TVD_color, colors, params, n,\
                           param_name, SCHEME, SCHEME_NAME,
@@ -69,33 +87,36 @@ n = 100
 
 PATH = 'schemes_graphs/'
 
-param_name = r'$\beta$'
-SCHEME = SCHEMES.FSFL
-SCHEME_NAME = 'FSFL'
-fileName = PATH + SCHEME_NAME + '.png'
-generate_scheme_curve(TVD_color, colors, betas, n, param_name,\
-                      SCHEME, SCHEME_NAME, fileName)
+generate_TVD_Harten()
+generate_CBC()
 
-param_name = r'$\alpha$'
-SCHEME = SCHEMES.TOPUS
-SCHEME_NAME = 'TOPUS'
-fileName = PATH + SCHEME_NAME + '.png'
-generate_scheme_curve(TVD_color, colors, alphas, n, param_name,\
-                      SCHEME, SCHEME_NAME, fileName)
-
-param_name = r'$\gamma$'
-SCHEME = SCHEMES.SDPUS_C1
-SCHEME_NAME = 'SDPUS_C1'
-fileName = PATH + SCHEME_NAME + '.png'
-generate_scheme_curve(TVD_color, colors, gammas, n, param_name,\
-                      SCHEME, SCHEME_NAME, fileName)
-
-param_name = r'$\lambda$'
-SCHEME = SCHEMES.EPUS
-SCHEME_NAME = 'EPUS'
-fileName = PATH + SCHEME_NAME + '.png'
-generate_scheme_curve(TVD_color, colors, lams, n, param_name,\
-                      SCHEME, SCHEME_NAME, fileName)
+#param_name = r'$\beta$'
+#SCHEME = SCHEMES.FSFL
+#SCHEME_NAME = 'FSFL'
+#fileName = PATH + SCHEME_NAME + '.png'
+#generate_scheme_curve(TVD_color, colors, betas, n, param_name,\
+#                      SCHEME, SCHEME_NAME, fileName)
+#
+#param_name = r'$\alpha$'
+#SCHEME = SCHEMES.TOPUS
+#SCHEME_NAME = 'TOPUS'
+#fileName = PATH + SCHEME_NAME + '.png'
+#generate_scheme_curve(TVD_color, colors, alphas, n, param_name,\
+#                      SCHEME, SCHEME_NAME, fileName)
+#
+#param_name = r'$\gamma$'
+#SCHEME = SCHEMES.SDPUS_C1
+#SCHEME_NAME = 'SDPUS_C1'
+#fileName = PATH + SCHEME_NAME + '.png'
+#generate_scheme_curve(TVD_color, colors, gammas, n, param_name,\
+#                      SCHEME, SCHEME_NAME, fileName)
+#
+#param_name = r'$\lambda$'
+#SCHEME = SCHEMES.EPUS
+#SCHEME_NAME = 'EPUS'
+#fileName = PATH + SCHEME_NAME + '.png'
+#generate_scheme_curve(TVD_color, colors, lams, n, param_name,\
+#                      SCHEME, SCHEME_NAME, fileName)
 
 
 

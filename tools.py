@@ -8,7 +8,8 @@ import matplotlib.pyplot as plt
 def save_fig(x_axes, y_axes, fileName, title, label,\
                 marker = '.',\
                 xlabel = 'x', ylabel = 'y',\
-                clean_plot = True, margin = 0.1, ymin = None, ymax = None):
+                clean_plot = True, margin = 0.1, ymin = None, ymax = None, 
+                is_traced = False):
     
     min_y_axes = min(y_axes)
     max_y_axes = max(y_axes)
@@ -33,9 +34,14 @@ def save_fig(x_axes, y_axes, fileName, title, label,\
     
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
+    
+    if is_traced:  
         
-    plt.plot(x_axes, y_axes, marker = marker,\
-              label = label)
+        plt.plot(x_axes, y_axes, marker = marker,\
+                  label = label, dashes = [int(len(x_axes)/10)])
+    else:
+        plt.plot(x_axes, y_axes, marker = marker,\
+                  label = label)
     
     plt.legend(loc = "best")
     plt.grid(True)
@@ -49,3 +55,8 @@ def save_fig(x_axes, y_axes, fileName, title, label,\
         #clean plot
         plt.cla()
         plt.clf()
+        
+def clear():
+    
+    plt.cla()
+    plt.clf()

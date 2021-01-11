@@ -252,7 +252,7 @@ def save_solution(x_axes, u, analitic_sol_func, cfl, v, PATH, time, SCHEME_LABEL
         tools.save_fig(x_axes, analitic, fileName, title, 'analitica',\
                 marker = None,\
                 xlabel = 'x', ylabel = 'y',\
-                clean_plot = True, ymin = ymin, ymax = ymax)
+                clean_plot = clean_plot, ymin = ymin, ymax = ymax)
 
 #generate log of params values    
 def params_log(nx, dx, nt, dt, domx, domt, cfl, v, param):
