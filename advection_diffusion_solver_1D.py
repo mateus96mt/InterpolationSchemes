@@ -116,7 +116,10 @@ def advection_difusion_equation_solver(nx, domx, domt, cfl, v,\
                                        equation_type = Equation_types.Burges,\
                                        a = 1,\
                                        save_step_by_step = False, clean_plot = True,\
-                                       ymin = None, ymax = None, step_interval = 0.05):
+                                       ymin = None, ymax = None, step_interval = 0.05,
+                                       customFileName = None,
+                                       customTitle = None,
+                                       outsideLegend = False):
     #spacing discretization size
     dx = (domx[-1] - domx[0]) / (nx-1)  
     
@@ -210,31 +213,52 @@ def advection_difusion_equation_solver(nx, domx, domt, cfl, v,\
             time = t*dt
             save_solution(x_axes, M_u[p], analitic_sol_func,\
                   cfl, v, PATH, time, SCHEME_LABEL,\
-                  marker = marker, clean_plot=clean_plot, ymin = ymin, ymax = ymax)
+                  marker = marker, clean_plot=clean_plot, ymin = ymin, ymax = ymax,
+                  customFileName = customFileName,
+                  customTitle = customTitle,
+                  outsideLegend = outsideLegend)
  
     #save result in last iteration
     if (not save_step_by_step):
         save_solution(x_axes, M_u[p], analitic_sol_func,\
                   cfl, v, PATH, domt[-1], SCHEME_LABEL,\
-                  marker = marker, clean_plot=clean_plot, ymin = ymin, ymax = ymax)
+                  marker = marker, clean_plot=clean_plot, ymin = ymin, ymax = ymax,
+                  customFileName = customFileName,
+                  customTitle = customTitle,
+                  outsideLegend = outsideLegend)
         
 
 
 def save_solution(x_axes, u, analitic_sol_func, cfl, v, PATH, time, SCHEME_LABEL,\
-                  marker = '.', clean_plot = False, ymin = None, ymax = None):
+                  marker = '.', clean_plot = False, ymin = None, ymax = None,
+                  customFileName = None,
+                  customTitle = None,
+                  outsideLegend = False):
     
     time_precision = 4
     
     time_string = "{:." + str(time_precision) + "f}"
     
-    fileName = PATH + 'result'\
-    + '_time=' + time_string.format(time)\
-    + '_v=' + str(v)\
-    + '_cfl=' + str(cfl) + '.png'
+    if customFileName==None:
     
-    title = 'tempo = ' + str(time)\
-            + '  v =' + str(v)\
-            + '  cfl = ' + str(cfl)
+        fileName = PATH + 'result'\
+        + '_time=' + time_string.format(time)\
+        + '_v=' + str(v)\
+        + '_cfl=' + str(cfl) + '.png'
+    
+    else:
+
+        fileName = customFileName
+    
+    if customTitle==None:
+    
+        title = 'tempo = ' + str(time)\
+                + '  v =' + str(v)\
+                + '  cfl = ' + str(cfl)
+    
+    else:
+
+        title = customTitle
     
     analitic = None
     

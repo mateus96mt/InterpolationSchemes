@@ -233,49 +233,225 @@ def TRAB1_CFD_MESTRADO():
     #--------------------------------------------------------
 
 
-def boundary_layer_equation_test():
+def parameter_comparation_boundary_layer_equation_test():
     
-    cfl = 0.1
+    ymin = -0.1
+    ymax = 1.1
     
-    nx = 100
+    alphas = [[-2.0, '.'], [0.0, 'x'], [2.0, '*']]
     
-    v = 0.25
+    betas = [[0.0, '.'], [1.0, 'x'], [2.0, '*']]
     
+    gammas = [[4.0, '.'], [8.0, 'x'], [12.0, '*']]
+    
+    lams = [[16.0, '.'], [48.0, 'x'], [95.0, '*']]
+    
+    schemes = [[SCHEMES.TOPUS, 'alpha'],
+               [SCHEMES.FSFL, 'beta'],
+               [SCHEMES.SDPUS_C1, 'gamma'],
+               [SCHEMES.EPUS, 'lambda']] 
+#    schemes = [[SCHEMES.TOPUS, 'alpha']]   
+
+    params_list = [alphas, betas, gammas, lams]
+#    params_list = [alphas]
+    
+        
     domx = [0, 1]
     
-    domt = [0, 1]
-    
-    dx = (domx[-1] - domx[0]) / (nx-1)
+    domt = [0, 0.5]
  
-    PATH = 'test/'
+    PATH = 'camada_limite_param_comp_'
     
-    n_v = 1
+    vs_nxs = [[1, 10], [0.1, 80], [0.01, 640]]
+#    vs_nxs = [[1, 10]]
     
-    #FSFL param
-    beta = 0
     
-    for i in range(n_v):
+    save_analitic = True
         
-        analitic = [analitic_boundary_layer_equation(i*dx, v) for i in range(nx)]
-        
-        fileName = PATH + 'boundary_layer'\
-            + '_time=' + str(0)\
-            + '_v=' + str(v)\
-            + '_cfl=' + str(cfl) + '.png'
-        
-        tools.save_result(domx, nx, dx, analitic, fileName, 0, v, cfl, 
-                'analitica', marker = None, ylimD=-0.5, ylimU=1.5)
-        
-        SCHEME = solver.FSFL
-        SCHEME_LABEL = 'FSFL'
-        param = beta
-        
-        solver.advection_difusion_equation_solver(nx, dx, domx, domt, cfl, v, \
-                   SCHEME, param, SCHEME_LABEL, marker = '.', \
-                   PATH = PATH, equation_type = solver.Equation_types.Boundary_layer)
-        
-        v = v / 10
+    t = domt[-1]
     
+    for scheme_index in range(len(schemes)):
+    
+        tools.clear()
+        
+        scheme = schemes[scheme_index]
+        
+        params = params_list[scheme_index]
+        
+        custom_path = PATH + str(scheme[0].__name__) + '/'
+        
+        time_precision = 4
+            
+        time_string = "{:." + str(time_precision) + "f}"
+        
+        fileName = custom_path + 'result'\
+                    + '_time=' + time_string.format(t)\
+                    + '.png'
+                    
+        title = 'tempo = ' + str(t)
+        
+        for v_nx in vs_nxs:
+            
+            initial_cond_func = lambda x: initial_cond_func_Boundary_Layer(x)
+            
+            v = v_nx[0]
+            
+            if save_analitic:
+                
+                x_axes = np.linspace(domx[0], domx[-1], 640)
+                
+                analitic = [analitic_boundary_layer_equation(x_axes[i], v)\
+                            for i in range(640)]
+                
+                tools.save_fig(x_axes, analitic, fileName, 'analitica', 'analitica_v=' + str(v),\
+                        marker = None,\
+                        xlabel = 'x', ylabel = 'y',\
+                        clean_plot = False, margin = 0.1, ymin = ymin, ymax = ymax)
+                        
+            for _param in params:
+            
+                param = _param[0]
+                
+                marker = '.'#_param[1]
+                
+                SCHEME = scheme[0]
+                
+                SCHEME_LABEL = 'v=' + str(v) + '_' + scheme[-1] + '=' + str(param)
+                
+                nx = v_nx[-1]
+                
+                dx = (domx[-1] - domx[0]) / (nx-1)
+    
+                dt = 0.01 / float(nx)
+                
+                cfl = dt / dx
+                
+                solver.advection_difusion_equation_solver(nx, domx, domt, cfl, v,\
+                                               initial_cond_func,\
+                                               initial_cond_func(domx[0]),\
+                                               1.0,\
+                                               SCHEME, param,\
+                                               None,\
+                                               SCHEME_LABEL, marker = marker,\
+                                               PATH = custom_path,\
+                                               equation_type = solver.Equation_types.Boundary_layer,\
+                                               a = 1,\
+                                               save_step_by_step = False, clean_plot = False,\
+                                               ymin = ymin, ymax = ymax,
+                                               customFileName = fileName,
+                                               customTitle = title,
+                                               outsideLegend=True)
+
+def schemes_comparation_boundary_layer_equation_test():
+    
+    tools.clear()
+    
+    ymin = -0.1
+    ymax = 1.1
+    
+    alpha = 2.0
+    
+    beta = 2.0
+    
+    gamma = 12.0
+    
+    lam = 95.0
+    
+    params = [alpha, beta, gamma, lam]
+    
+    schemes = [[SCHEMES.TOPUS, 'TOPUS alpha'],
+               [SCHEMES.FSFL, 'FSFL beta'],
+               [SCHEMES.SDPUS_C1, 'SDPUS-C1 gamma'],
+               [SCHEMES.EPUS, 'EPUS lambda']]
+        
+    domx = [0, 1]
+    
+    domt = [0, 0.5]
+ 
+    PATH = 'camada_limite_schemes_comp_'
+    
+    vs_nxs = [[1, 10], [0.1, 80], [0.01, 640]]
+#    vs_nxs = [[1, 10]]
+    
+    save_analitic = True
+    
+    for v_nx in vs_nxs:
+        
+        v = v_nx[0]
+    
+        if save_analitic:
+            
+            time_precision = 4
+                
+            time_string = "{:." + str(time_precision) + "f}"
+            
+            fileName = PATH + '/' + 'result'\
+                        + '_time=' + time_string.format(domt[-1])\
+                        + '.png'
+            
+            x_axes = np.linspace(domx[0], domx[-1], 640)
+            
+            analitic = [analitic_boundary_layer_equation(x_axes[i], v)\
+                        for i in range(640)]
+            
+            tools.save_fig(x_axes, analitic, fileName, 'analitica', 'analitica_v=' + str(v),\
+                    marker = None,\
+                    xlabel = 'x', ylabel = 'y',\
+                    clean_plot = False, margin = 0.1, ymin = ymin, ymax = ymax)
+    
+    t = domt[-1]
+    
+    for scheme_index in range(len(schemes)):
+        
+        scheme = schemes[scheme_index]
+                
+        custom_path = PATH + '/'
+        
+        fileName = custom_path + 'result'\
+                    + '_time=' + time_string.format(t)\
+                    + '.png'
+                    
+        title = 'tempo = ' + str(t)
+        
+        for v_nx in vs_nxs:
+            
+            initial_cond_func = lambda x: initial_cond_func_Boundary_Layer(x)
+            
+            v = v_nx[0]
+                           
+            param = params[scheme_index]
+            
+            marker = '.'#_param[1]
+            
+            SCHEME = scheme[0]
+            
+            SCHEME_LABEL = 'v=' + str(v) + ' ' + scheme[-1] + '=' + str(param)
+            
+            nx = v_nx[-1]
+            
+            dx = (domx[-1] - domx[0]) / (nx-1)
+
+            dt = 0.01 / float(nx)
+            
+            cfl = dt / dx
+            
+            solver.advection_difusion_equation_solver(nx, domx, domt, cfl, v,\
+                                           initial_cond_func,\
+                                           initial_cond_func(domx[0]),\
+                                           1.0,\
+                                           SCHEME, param,\
+                                           None,\
+                                           SCHEME_LABEL, marker = marker,\
+                                           PATH = custom_path,\
+                                           equation_type = solver.Equation_types.Boundary_layer,\
+                                           a = 1,\
+                                           save_step_by_step = False, clean_plot = False,\
+                                           ymin = ymin, ymax = ymax,
+                                           customFileName = fileName,
+                                           customTitle = title,
+                                           outsideLegend=True)
+
+        
 def linear_advection_equation_test():
     
     #max and minimum values for plot
@@ -621,4 +797,6 @@ def initial_and_final_linear_advection(ymax, ymin, t_final, case = 2, a = 1):
 #initial_and_final_linear_advection(1.1, -0.1, 0.25, case = 2)
 #initial_and_final_linear_advection(1.1, -1.1, 0.125, case = 3)
 #linear_advection_parameter_comparation()
-linear_advection_schemes_comparation()
+#linear_advection_schemes_comparation()
+#parameter_comparation_boundary_layer_equation_test()
+schemes_comparation_boundary_layer_equation_test()

@@ -9,7 +9,8 @@ def save_fig(x_axes, y_axes, fileName, title, label,\
                 marker = '.',\
                 xlabel = 'x', ylabel = 'y',\
                 clean_plot = True, margin = 0.1, ymin = None, ymax = None, 
-                is_traced = False):
+                is_traced = False,
+                outsideLegend = False):
     
     min_y_axes = min(y_axes)
     max_y_axes = max(y_axes)
@@ -42,8 +43,12 @@ def save_fig(x_axes, y_axes, fileName, title, label,\
     else:
         plt.plot(x_axes, y_axes, marker = marker,\
                   label = label)
-    
-    plt.legend(loc = "best")
+        
+    if outsideLegend:
+        plt.legend(loc = "best")
+    else:
+        plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
     plt.grid(True)
     plt.tight_layout()
     
