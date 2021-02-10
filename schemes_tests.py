@@ -39,6 +39,29 @@ def generate_CBC(color='b'):
     plt.tight_layout()
     plt.savefig('SCHEMES_TESTS/CBC.png', dpi=100)
 
+def generate_OPQ_LEONARD(color='lightgray'):
+    
+    x, y, = [0.0, 0.5, 1.0], [0.0, 1.0, 1.0]
+    o = [0,0]
+    p = [1,1]
+    q = [0.5, 0.75]
+
+    plt.figure(figsize=(8, 8))
+    plt.axis('equal')
+    plt.xlabel(r'$\hat{\phi}_U$', fontsize=18)
+    plt.ylabel(r'$\hat{\phi}_f$', fontsize=18, rotation=0)
+    plt.title('Pontos O, P e Q de Leonard')
+    
+    plt.plot([x[0], x[-1]], [y[0], y[-1]], color=color)
+    plt.plot([x[0], x[1]], [y[0], y[1]], color=color)
+    plt.plot([x[1], x[-1]], [y[1], y[-1]], color=color)
+    plt.scatter(o[0], o[1], label='O', marker='D', s=70, color = 'black')
+    plt.scatter(p[0], p[1], label='P', marker='X', s=70, color = 'black')
+    plt.scatter(q[0], q[1], label='Q', marker='o', s=70, color = 'black')
+    plt.legend(loc='best')
+    plt.tight_layout()
+    plt.savefig('SCHEMES_TESTS/opq_leonard.png', dpi=100)
+
 def generate_scheme_curve(TVD_color, colors, params, n,\
                           param_name, SCHEME, SCHEME_NAME,
                           fileName):
@@ -87,8 +110,9 @@ n = 100
 
 PATH = 'schemes_graphs/'
 
-generate_TVD_Harten()
-generate_CBC()
+#generate_TVD_Harten()
+#generate_CBC()
+generate_OPQ_LEONARD()
 
 #param_name = r'$\beta$'
 #SCHEME = SCHEMES.FSFL
