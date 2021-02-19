@@ -538,15 +538,21 @@ def linear_advection_equation_test():
         v = v / 10
     
     
-def linear_advection_parameter_comparation():
+def linear_advection_parameter_comparation(folderPathSubName = "", cases = [2, 3]):
     
-    alphas = [[-2.0, '.'], [0.0, 'x'], [2.0, '*']]
+    number_of_params = 8
     
-    betas = [[0.0, '.'], [1.0, 'x'], [2.0, '*']]
+    alphas = np.linspace(-2.0, 2.0, number_of_params)
+    alphas = [float('%.2f' % el) for el in alphas]
     
-    gammas = [[4.0, '.'], [8.0, 'x'], [12.0, '*']]
+    betas = np.linspace(0.0, 2.0, number_of_params)
+    betas = [float('%.2f' % el) for el in betas]
     
-    lams = [[16.0, '.'], [48.0, 'x'], [95.0, '*']]
+    gammas = np.linspace(4.0, 12.0, number_of_params)
+    gammas = [float('%.2f' % el) for el in gammas]
+    
+    lams = np.linspace(16.0, 95.0, number_of_params)
+    lams = [float('%.2f' % el) for el in lams]
     
 #    params_list = [alphas]
     params_list = [alphas, betas, gammas, lams]
@@ -561,13 +567,11 @@ def linear_advection_parameter_comparation():
     #advection velocity
     a = 1
     
-    cases = [2, 3]
-    
     ymins = [-0.1, -1.1]
     
     ymaxs = [1.1, 1.1]
     
-    cfl = 0.05
+    cfl = 0.9
     
     nx = 400
     
@@ -608,7 +612,7 @@ def linear_advection_parameter_comparation():
             
             params = params_list[scheme_index]
             
-            custom_path = str(SCHEME.__name__) + '_' + PATH
+            custom_path = folderPathSubName + "_" + str(SCHEME.__name__) + '_' + PATH
             
             if save_analitic:
         
@@ -630,15 +634,17 @@ def linear_advection_parameter_comparation():
                         clean_plot = False, margin = 0.1, ymin = ymin, ymax = ymax)
             
             
-            for param_ in params:
+            for param in params:
                 
-                param = param_[0]
+#                param = param_[0]
                 
                 marker = None#param_[-1]
                 
                 SCHEME_LABEL = scheme[-1] + '=' + str(param)
                 
                 initial_cond_func = lambda x: initial_cond_func_Linear_Advection(x, case = case)
+            
+                omitPlot = not (param == params[0] or param == params[-1])
             
                 solver.advection_difusion_equation_solver(nx, domx, domt, cfl, v,\
                                                initial_cond_func,\
@@ -651,7 +657,8 @@ def linear_advection_parameter_comparation():
                                                equation_type = solver.Equation_types.Linear_advection,\
                                                a = 1,\
                                                save_step_by_step = False, clean_plot = False,\
-                                               ymin = ymin, ymax = ymax)
+                                               ymin = ymin, ymax = ymax,
+                                               omitPlot = omitPlot)
         
 def linear_advection_schemes_comparation():
     
@@ -792,11 +799,135 @@ def initial_and_final_linear_advection(ymax, ymin, t_final, case = 2, a = 1):
             xlabel = 'x', ylabel = 'y',\
             clean_plot = False, margin = 0.1, ymin = ymin, ymax = ymax, is_traced = False)
 
+def linear_advection_parameter_comparation_with_error(errorType=2):
+    
+    number_of_params = 8
+    
+    alphas = np.linspace(-2.0, 2.0, number_of_params)
+    
+    betas = np.linspace(0.0, 2.0, number_of_params)
+    
+    gammas = np.linspace(4.0, 12.0, number_of_params)
+    
+    lams = np.linspace(16.0, 95.0, number_of_params)
+    
+#    params_list = [alphas]
+    params_list = [alphas, betas, gammas, lams]
+    
+    
+#    schemes = [[SCHEMES.TOPUS, 'alpha']]
+    schemes = [[SCHEMES.TOPUS, 'alpha'],
+               [SCHEMES.FSFL, 'beta'],
+               [SCHEMES.SDPUS_C1, 'gamma'],
+               [SCHEMES.EPUS, 'lambda']]
+    
+    #advection velocity
+    a = 1
+    
+    cases = [2]
+    
+    ymins = [-0.1, -1.1]
+    
+    ymaxs = [1.1, 1.1]
+    
+    cfl = 0.9
+    
+    nx = 400
+    
+    v = 0.25
+    
+    domx = [-1, 1]
+    
+    domts = [[0.0, 0.25], [0, 0.125]]
+    
+    for case_index in range(len(cases)):
+    
+        case = cases[case_index]
+        
+        ymin = ymins[case_index]
+        
+        ymax = ymaxs[case_index]
+        
+        domt = domts[case_index]
+                
+        PATH = 'ERROR_param_compar_lin_ad_CASE=' + str(case) + '/'
+        
+        for scheme_index in range(len(schemes)):
+            
+            tools.clear()
+            
+            scheme = schemes[scheme_index]
+            
+            SCHEME = scheme[0]
+            
+            params = params_list[scheme_index]
+            
+            custom_path = str(SCHEME.__name__) + '_' + PATH
+            
+            analitic_sol = lambda x, t: analitic_linear_advection(x, u_0, t, a, case = case)
+            
+            ERRORS = []
+            
+            for param in params:
+                                
+                marker = None#param_[-1]
+                
+                SCHEME_LABEL = scheme[-1] + '=' + str(param)
+                
+                initial_cond_func = lambda x: initial_cond_func_Linear_Advection(x, case = case)
+            
+                error = solver.advection_difusion_equation_solver(nx, domx, domt, cfl, v,\
+                                               initial_cond_func,\
+                                               initial_cond_func(domx[0]),\
+                                               initial_cond_func(domx[-1]),\
+                                               SCHEME, param,\
+                                               analitic_sol,\
+                                               SCHEME_LABEL, marker = marker,\
+                                               PATH = custom_path,\
+                                               equation_type = solver.Equation_types.Linear_advection,\
+                                               a = 1,\
+                                               save_step_by_step = False, clean_plot = False,\
+                                               ymin = ymin, ymax = ymax,
+                                               generateError = True,
+                                               errorType=errorType)
+                
+                ERRORS.append(error)
+                
+            tools.save_fig(params, ERRORS, PATH + scheme[0].__name__ + ".png", 
+                           scheme[0].__name__ + " cfl = " + str(cfl),
+                           None, xlabel = "parâmetro " + scheme[-1],
+                           ylabel = 'Erro')
+
 #TRAB1_CFD_MESTRADO()
 #linear_advection_equation_test()
 #initial_and_final_linear_advection(1.1, -0.1, 0.25, case = 2)
 #initial_and_final_linear_advection(1.1, -1.1, 0.125, case = 3)
-#linear_advection_parameter_comparation()
+linear_advection_parameter_comparation(folderPathSubName = 'REFINED', cases = [2])
 #linear_advection_schemes_comparation()
 #parameter_comparation_boundary_layer_equation_test()
-schemes_comparation_boundary_layer_equation_test()
+#schemes_comparation_boundary_layer_equation_test()
+#linear_advection_parameter_comparation_with_error(errorType=2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

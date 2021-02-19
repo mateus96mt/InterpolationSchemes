@@ -3,6 +3,7 @@
 
 import os
 import matplotlib.pyplot as plt
+import numpy as np
 
 #plot result and save in figure
 def save_fig(x_axes, y_axes, fileName, title, label,\
@@ -60,6 +61,41 @@ def save_fig(x_axes, y_axes, fileName, title, label,\
         #clean plot
         plt.cla()
         plt.clf()
+        
+def calculateError(exata, y_numerica, nx, domx, dx, time, tipo = 2):
+    
+    x = np.linspace(domx[0], domx[1], nx)
+    
+    y_exata = [exata(x[i], time) for i in range(nx)]
+        
+    sum_num = 0.0
+    sum_dem = 0.0
+    max_error = max(np.array(y_exata)[:]-np.array(y_numerica)[:])
+    max_exata = max(np.array(y_exata))
+    
+    for i in range(nx):
+    
+        if tipo == 1:
+        
+            sum_num = sum_num + (y_exata[i] - y_numerica[i])
+            sum_dem = sum_dem + y_exata[i]
+        
+        if tipo == 2:
+        
+            sum_num = sum_num + ((y_exata[i] - y_numerica[i])**2)
+            sum_dem = sum_dem + (y_exata[i]**2)
+    
+    if tipo == 1:
+        
+        return (sum_num/sum_dem)
+    
+    if tipo == 2:
+        
+        return np.sqrt(sum_num/sum_dem)
+    
+    if tipo == 3:
+        
+        return max_error/max_exata
         
 def clear():
     

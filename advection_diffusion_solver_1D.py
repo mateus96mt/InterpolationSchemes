@@ -119,7 +119,10 @@ def advection_difusion_equation_solver(nx, domx, domt, cfl, v,\
                                        ymin = None, ymax = None, step_interval = 0.05,
                                        customFileName = None,
                                        customTitle = None,
-                                       outsideLegend = False):
+                                       outsideLegend = False,
+                                       generateError = False,
+                                       errorType = 2,
+                                       omitPlot = False):
     #spacing discretization size
     dx = (domx[-1] - domx[0]) / (nx-1)  
     
@@ -219,7 +222,7 @@ def advection_difusion_equation_solver(nx, domx, domt, cfl, v,\
                   outsideLegend = outsideLegend)
  
     #save result in last iteration
-    if (not save_step_by_step):
+    if (not save_step_by_step and not generateError and not omitPlot):
         save_solution(x_axes, M_u[p], analitic_sol_func,\
                   cfl, v, PATH, domt[-1], SCHEME_LABEL,\
                   marker = marker, clean_plot=clean_plot, ymin = ymin, ymax = ymax,
@@ -227,6 +230,11 @@ def advection_difusion_equation_solver(nx, domx, domt, cfl, v,\
                   customTitle = customTitle,
                   outsideLegend = outsideLegend)
         
+    if generateError:
+        
+        return tools.calculateError(analitic_sol_func,
+                                    M_u[p], nx, domx, dx, domt[-1],
+                                    tipo=errorType)
 
 
 def save_solution(x_axes, u, analitic_sol_func, cfl, v, PATH, time, SCHEME_LABEL,\
