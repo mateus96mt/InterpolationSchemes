@@ -1,9 +1,9 @@
 #MATEUS TEIXEIRA MAGALHÃES - UFJF - PGMC
 #github repository: https://github.com/mateus96mt/InterpolationSchemes.git
 
-import numpy as np
 import enum
 import tools
+import os
 
 #class of equations of 'advection_difusion_equation_solver'
 class Equation_types(enum.Enum):
@@ -111,18 +111,11 @@ def advection_difusion_equation_solver(nx, domx, domt, cfl, v,\
                                        initial_cond_func,\
                                        uL, uR, SCHEME, param,\
                                        analitic_sol_func,\
-                                       SCHEME_LABEL, marker = '.',\
-                                       PATH = 'results/',\
+                                       folderName,\
                                        equation_type = Equation_types.Burges,\
                                        a = 1,\
-                                       save_step_by_step = False, clean_plot = True,\
-                                       ymin = None, ymax = None, step_interval = 0.05,
-                                       customFileName = None,
-                                       customTitle = None,
-                                       outsideLegend = False,
-                                       generateError = False,
-                                       errorType = 2,
-                                       omitPlot = False):
+                                       step_interval = 0.05,\
+                                       errorType = 2):
     #spacing discretization size
     dx = (domx[-1] - domx[0]) / (nx-1)  
     
@@ -158,10 +151,8 @@ def advection_difusion_equation_solver(nx, domx, domt, cfl, v,\
     M_u[q][-1] = uR  
         
     #save initial result   
-    if save_step_by_step:
-        save_solution(x_axes, M_u[p], analitic_sol_func,\
-                      cfl, v, PATH, domt[0], SCHEME_LABEL,\
-                      marker = marker, clean_plot=True, ymin = ymin, ymax = ymax)
+    save_solution(folderName, x_axes, M_u[p], analitic_sol_func, cfl, v, 0,
+                  nx, nt, dx, dt, domt)
     
     #loop in time
     for t in range(1, nt):
@@ -212,79 +203,52 @@ def advection_difusion_equation_solver(nx, domx, domt, cfl, v,\
                 M_u[p][i] = - ( dt * a * (uf -  ug) / dx ) + M_u[q][i]
             
         #save result in each iteration
-        if save_step_by_step and t%int(nt*step_interval)==0:
-            time = t*dt
-            save_solution(x_axes, M_u[p], analitic_sol_func,\
-                  cfl, v, PATH, time, SCHEME_LABEL,\
-                  marker = marker, clean_plot=clean_plot, ymin = ymin, ymax = ymax,
-                  customFileName = customFileName,
-                  customTitle = customTitle,
-                  outsideLegend = outsideLegend)
+        save_solution(folderName, x_axes, M_u[p], analitic_sol_func, cfl, v, t,
+                      nx, nt, dx, dt, domt)
  
     #save result in last iteration
-    if (not save_step_by_step and not generateError and not omitPlot):
-        save_solution(x_axes, M_u[p], analitic_sol_func,\
-                  cfl, v, PATH, domt[-1], SCHEME_LABEL,\
-                  marker = marker, clean_plot=clean_plot, ymin = ymin, ymax = ymax,
-                  customFileName = customFileName,
-                  customTitle = customTitle,
-                  outsideLegend = outsideLegend)
+    save_solution(folderName, x_axes, M_u[p], analitic_sol_func, cfl, v, nt,
+                  nx, nt, dx, dt, domt)
         
-    if generateError:
         
-        return tools.calculateError(analitic_sol_func,
-                                    M_u[p], nx, domx, dx, domt[-1],
-                                    tipo=errorType)
+    return tools.calculateError(analitic_sol_func,
+                                M_u[p], nx, domx, dx, domt[-1],
+                                tipo=errorType)
 
 
-def save_solution(x_axes, u, analitic_sol_func, cfl, v, PATH, time, SCHEME_LABEL,\
-                  marker = '.', clean_plot = False, ymin = None, ymax = None,
-                  customFileName = None,
-                  customTitle = None,
-                  outsideLegend = False):
+def save_solution(folderName, x_axes, u, analitic_sol_func, cfl, v, t, 
+                  nx, nt, dx, dt, domt):
     
-    time_precision = 4
+    time = domt[0] + t*dt
     
-    time_string = "{:." + str(time_precision) + "f}"
+    #create folder if not exist
+    if not os.path.exists(folderName):
+        os.makedirs(folderName)
     
-    if customFileName==None:
-    
-        fileName = PATH + 'result'\
-        + '_time=' + time_string.format(time)\
-        + '_v=' + str(v)\
-        + '_cfl=' + str(cfl) + '.png'
-    
+    if t == nt:
+        
+        output = open(folderName + "/" + "FINAL" + ".data","w")
+        print(folderName + "/" + "FINAL" + ".data")
+        
     else:
+        
+        output = open(folderName + "/" + str(t) + ".data","w")
+        print(folderName + "/" + str(t) + ".data")
 
-        fileName = customFileName
     
-    if customTitle==None:
+    output.write("time = " + str(time)+
+                 "    cfl = " + str(cfl) + 
+                 "    nx = " + str(nx) +
+                 "    nt = " + str(nt) +
+                 "    dx = " + str(dx) +
+                 "    dt = " + str(dt) +"\n")
     
-        title = 'tempo = ' + str(time)\
-                + '  v =' + str(v)\
-                + '  cfl = ' + str(cfl)
-    
-    else:
-
-        title = customTitle
-    
-    analitic = None
-    
-    if analitic_sol_func!=None:
-    
-        analitic = [analitic_sol_func(x, time) for x in x_axes]
-            
-    tools.save_fig(x_axes, u, fileName, title, SCHEME_LABEL,\
-                marker = marker,\
-                xlabel = 'x', ylabel = 'y',\
-                clean_plot = analitic==None and clean_plot, ymin = ymin, ymax = ymax)
-    
-    if analitic != None:
-            
-        tools.save_fig(x_axes, analitic, fileName, title, 'analitica',\
-                marker = None,\
-                xlabel = 'x', ylabel = 'y',\
-                clean_plot = clean_plot, ymin = ymin, ymax = ymax)
+    for i in range(len(x_axes)):
+        
+        output.write(str(x_axes[i]) +
+                     " " + str(analitic_sol_func(x_axes[i], time)) + 
+                     " " + str(u[i]) +
+                     "\n")
 
 #generate log of params values    
 def params_log(nx, dx, nt, dt, domx, domt, cfl, v, param):
