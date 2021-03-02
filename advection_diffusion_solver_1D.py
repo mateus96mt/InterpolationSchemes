@@ -115,7 +115,9 @@ def advection_difusion_equation_solver(nx, domx, domt, cfl, v,\
                                        equation_type = Equation_types.Burges,\
                                        a = 1,\
                                        step_interval = 0.05,\
-                                       errorType = 2):
+                                       errorType = 2,
+                                       fileLog = False,
+                                       paramsLog = False):
     #spacing discretization size
     dx = (domx[-1] - domx[0]) / (nx-1)  
     
@@ -134,7 +136,9 @@ def advection_difusion_equation_solver(nx, domx, domt, cfl, v,\
     #x axes
     x_axes = []
     
-    params_log(nx, dx, nt, dt, domx, domt, cfl, v, param)
+    if paramsLog:
+    
+        params_log(nx, dx, nt, dt, domx, domt, cfl, v, param)
     
     #initial condition:    
     for i in range(nx):
@@ -208,7 +212,7 @@ def advection_difusion_equation_solver(nx, domx, domt, cfl, v,\
  
     #save result in last iteration
     save_solution(folderName, x_axes, M_u[p], analitic_sol_func, cfl, v, nt,
-                  nx, nt, dx, dt, domt)
+                  nx, nt, dx, dt, domt, fileLog = fileLog)
         
         
     return tools.calculateError(analitic_sol_func,
@@ -217,7 +221,7 @@ def advection_difusion_equation_solver(nx, domx, domt, cfl, v,\
 
 
 def save_solution(folderName, x_axes, u, analitic_sol_func, cfl, v, t, 
-                  nx, nt, dx, dt, domt):
+                  nx, nt, dx, dt, domt, fileLog = False):
     
     time = domt[0] + t*dt
     
@@ -228,12 +232,18 @@ def save_solution(folderName, x_axes, u, analitic_sol_func, cfl, v, t,
     if t == nt:
         
         output = open(folderName + "/" + "FINAL" + ".data","w")
-        print(folderName + "/" + "FINAL" + ".data")
+        
+        if fileLog:
+        
+            print(folderName + "/" + "FINAL" + ".data")
         
     else:
         
         output = open(folderName + "/" + str(t) + ".data","w")
-        print(folderName + "/" + str(t) + ".data")
+        
+        if fileLog:
+            
+            print(folderName + "/" + str(t) + ".data")
 
     
     output.write("time = " + str(time)+

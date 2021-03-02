@@ -135,7 +135,7 @@ def linear_advection_parameter_comparation(cases = [2, 3]):
     #advection velocity
     a = 1
     
-    cfl = 0.9
+    cfl = 0.05
     
     nx = 400
     
@@ -370,11 +370,121 @@ def param_compar_graficos_SDPUS():
     plt.cla()
     plt.clf()
 
+def init_cond():
+              
+    name = "RESULTADOS_DATA_SDPUS_C1_gamma="
+    
+    params = np.linspace(4.0, 12.0, 3)
+    param = params[0]
+    
+    sub_path = name + str(param)
+    _input = sub_path + "/0.data"
+    x, y_exata, y_num = tools.readOutPut(_input)
+    
+    plt.plot(x, y_exata, linewidth=1.0, color='red', label="Solução exata")
+    plt.xlabel('x')
+    plt.ylabel('u')
+    plt.title('Condição inicial')
+    
+    plt.savefig('caso2.png', dpi = 200)
+    plt.cla()
+    plt.clf()
+
+def linear_advection_parameter_comparation_with_error(errorType=2):
+    
+    number_of_params = 8
+    
+    alphas = np.linspace(-2.0, 2.0, number_of_params)
+    
+    betas = np.linspace(0.0, 2.0, number_of_params)
+    
+    gammas = np.linspace(4.0, 12.0, number_of_params)
+    
+    lams = np.linspace(16.0, 95.0, number_of_params)
+    
+#    params_list = [alphas]
+    params_list = [alphas, betas, gammas, lams]
+    
+    
+#    schemes = [[SCHEMES.TOPUS, 'alpha']]
+    schemes = [[SCHEMES.TOPUS, 'alpha'],
+               [SCHEMES.FSFL, 'beta'],
+               [SCHEMES.SDPUS_C1, 'gamma'],
+               [SCHEMES.EPUS, 'lambda']]
+    
+    #advection velocity
+    a = 1
+    
+    cases = [2]    
+    
+    cfl = 0.05
+    
+    nx = 400
+    
+    v = 0.25
+    
+    domx = [-1, 1]
+    
+    domts = [[0.0, 0.25], [0, 0.125]]
+    
+    for case_index in range(len(cases)):
+    
+        case = cases[case_index]
+        
+        domt = domts[case_index]
+                
+        folderName = 'ERROR_param_compar_lin_ad_CASE=' + str(case)
+        
+        for scheme_index in range(len(schemes)):
+            
+            tools.clear()
+            
+            scheme = schemes[scheme_index]
+            
+            SCHEME = scheme[0]
+            
+            params = params_list[scheme_index]
+                        
+            analitic_sol = lambda x, t: analitic_linear_advection(x, u_0, t, a, case = case)
+            
+            ERRORS = []
+            
+            for param in params:
+                                                                
+                initial_cond_func = lambda x: initial_cond_func_Linear_Advection(x, case = case)
+            
+                error = solver.advection_difusion_equation_solver(nx, domx, domt, cfl, v,\
+                                       initial_cond_func,\
+                                       initial_cond_func(domx[0]), 
+                                       initial_cond_func(domx[-1]),
+                                       SCHEME, param,\
+                                       analitic_sol,\
+                                       folderName,\
+                                       equation_type = solver.Equation_types.Linear_advection,\
+                                       a = 1,\
+                                       step_interval = 1,\
+                                       errorType = 2)
+                
+                ERRORS.append(error)
+                
+            plt.grid(True, linestyle='--')
+            plt.title('Esquema ' + SCHEME.__name__)
+            plt.xlabel(r'$' + '\\'+ scheme[1] + '$')
+            plt.ylabel('Erro')
+            plt.ylim([0.1575, 0.1750])
+            plt.tight_layout()
+            plt.plot(params, ERRORS, marker='*')
+            plt.savefig(folderName + '/' + SCHEME.__name__ + 'cfl=' + str(cfl) + '.png', dpi=200)
+            plt.cla()
+            plt.clf()
+
 linear_advection_parameter_comparation(cases = [2])
 param_compar_graficos_TOPUS()
 param_compar_graficos_FSFL()
 param_compar_graficos_SDPUS()
 param_compar_graficos_EPUS()
+#init_cond()
+#linear_advection_parameter_comparation_with_error(errorType=2)
 
 
 
