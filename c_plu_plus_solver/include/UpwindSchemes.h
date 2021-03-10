@@ -69,21 +69,21 @@ public:
 
         double phiFNorm = 0;
 
-        if (phiUNorm >= 0 and phiUNorm < a) {
+        if (phiUNorm >= 0 && phiUNorm < a) {
             phiFNorm = (2 - cfl) * phiUNorm;
         }
 
-        if (phiUNorm >= a and phiUNorm <= b) {
+        if (phiUNorm >= a && phiUNorm <= b) {
             phiFNorm = phiUNorm
                        + 0.5 * (1 - abs(cfl)) * (1 - phiUNorm)
                        - (1 / 6) * (1 - pow(cfl, 2)) * (1 - (2 * phiUNorm));
         }
 
-        if (phiUNorm > b and phiUNorm <= 1) {
+        if (phiUNorm > b && phiUNorm <= 1) {
             phiFNorm = 1 - cfl + (cfl * phiUNorm);
         }
 
-        if (phiUNorm < 0 or phiUNorm > 1) {
+        if (phiUNorm < 0 || phiUNorm > 1) {
             phiFNorm = phiUNorm;
         }
 
