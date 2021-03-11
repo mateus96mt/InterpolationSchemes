@@ -1,0 +1,12 @@
+EquationType linearAdvection
+nx 400
+domX -1.0 1.0
+domT 0.0 0.25
+initialCond 2
+uL null
+uR null
+analyticSolution 2
+cfl 0.9
+a 1.0
+v 0.0
+interpolationScheme TOPUS 2.0

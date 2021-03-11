@@ -7,6 +7,8 @@
 #include <fstream>
 #include <cmath>
 
+double _nan_ = -99999999999;
+
 using namespace std;
 
 Solver::Solver(int nx, double *domX, double *domT, double (*funcInitialCondition)(double), double uL, double uR,
@@ -37,7 +39,7 @@ Solver::solve(double _cfl, double _v, double _a, const char *_folderName, double
     this->v = _v;
     this->a = _a;
     this->folderName = _folderName;
-    this->schemeFunction = _schemeFunction;
+    this->funcInterpolationScheme = _schemeFunction;
     this->parameter = _parameter;
     this->isLogActive = _isLogActive;
 
@@ -60,10 +62,25 @@ Solver::solve(double _cfl, double _v, double _a, const char *_folderName, double
         this->numericSolution[q][i] = this->funcInitialCondition(this->xAxes[i]);
     }
 
-    this->numericSolution[p][0] = uL;
-    this->numericSolution[q][0] = uL;
-    this->numericSolution[p][this->nx - 1] = uR;
-    this->numericSolution[q][this->nx - 1] = uR;
+    if (uL != _nan_) {
+        printf("\nwhaaat? UL");
+        this->numericSolution[p][0] = uL;
+        this->numericSolution[q][0] = uL;
+    } else {
+        this->numericSolution[p][0] = funcInitialCondition(this->xAxes[0]);
+        this->numericSolution[q][0] = funcInitialCondition(this->xAxes[0]);
+    }
+
+
+    if (uR != _nan_) {
+        printf("\nwhaaat? uR");
+        this->numericSolution[p][this->nx - 1] = uR;
+        this->numericSolution[q][this->nx - 1] = uR;
+    } else {
+        this->numericSolution[p][this->nx - 1] = funcInitialCondition(this->xAxes[this->nx - 1]);
+        this->numericSolution[q][this->nx - 1] = funcInitialCondition(this->xAxes[this->nx - 1]);
+    }
+
 
     this->saveSolution(this->numericSolution[p], 0, nt, dt, dx);
 
@@ -160,7 +177,7 @@ double Solver::interpolateUf(const double *u, int i, double velFaceF,
         return phiU;
     } else {
         double phiUNorm = normVar(phiU, phiD, phiR);
-        double phiFNorm = this->schemeFunction(phiUNorm, this->parameter);
+        double phiFNorm = this->funcInterpolationScheme(phiUNorm, this->parameter);
         double phiF = phiR + ((phiD - phiR) * phiFNorm);
 
         return phiF;
@@ -194,7 +211,7 @@ double Solver::interpolateUg(const double *u, int i, double velFaceG,
         return phiU;
     } else {
         double phiUNorm = normVar(phiU, phiD, phiR);
-        double phiFNorm = this->schemeFunction(phiUNorm, this->parameter);
+        double phiFNorm = this->funcInterpolationScheme(phiUNorm, this->parameter);
         double phiF = phiR + ((phiD - phiR) * phiFNorm);
 
         return phiF;
@@ -245,9 +262,128 @@ void Solver::saveSolution(double *u, int t, int nt, double dt, double dx) {
     outputFile << "nPoints " << this->nx << "\n";
 
     for (int i = 0; i < this->nx; i++) {
-        analyticSolution[i] = funcAnalytic(this->xAxes[i], time);
+        if (funcAnalytic != nullptr) {
+            analyticSolution[i] = funcAnalytic(this->xAxes[i], time);
+        } else {
+            analyticSolution[i] = 0.0;
+        }
+
         outputFile << this->xAxes[i] << " " << this->analyticSolution[i] << " " << u[i] << "\n";
     }
 
     outputFile.close();
+}
+
+void Solver::readFile(char *fileName) {
+    try {
+        ifstream inputFile;
+        inputFile.open(fileName);
+
+        string aux;
+        inputFile >> aux >> aux;
+        if (aux == "linearAdvection") {
+            this->equationType = EquationType::linearAdvection;
+        }
+        if (aux == "boundaryLayer") {
+            this->equationType = EquationType::boundaryLayer;
+        }
+        if (aux == "burges") {
+            this->equationType = EquationType::burges;
+        }
+
+        inputFile >> aux >> this->nx;
+        this->numericSolution = new double *[2];
+        this->numericSolution[0] = new double[this->nx];
+        this->numericSolution[1] = new double[this->nx];
+
+        this->xAxes = new double[this->nx];
+        this->analyticSolution = new double[this->nx];
+
+        this->domX = new double[2];
+        inputFile >> aux >> this->domX[0] >> this->domX[1];
+
+        this->domT = new double[2];
+        inputFile >> aux >> this->domT[0] >> this->domT[1];
+
+        inputFile >> aux >> this->initialConditionIdentifier;
+
+        inputFile >> aux >> aux;
+        if (aux == "null") {
+            this->uL = _nan_;
+        }
+
+        inputFile >> aux >> aux;
+        if (aux == "null") {
+            this->uR = _nan_;
+        }
+
+        inputFile >> aux >> this->analyticSolutionIdentifier;
+
+        inputFile >> aux >> this->cfl;
+        inputFile >> aux >> this->a;
+        inputFile >> aux >> this->v;
+
+        inputFile >> aux >> aux;
+        cout << aux;
+        if (aux == "TOPUS") {
+            this->schemeIdentifier = 1;
+        }
+        if (aux == "FSFL") {
+            this->schemeIdentifier = 2;
+        }
+        if (aux == "EPUS") {
+            this->schemeIdentifier = 3;
+        }
+        if (aux == "SDPUS_C1") {
+            this->schemeIdentifier = 4;
+        }
+        if (aux == "ADBQUICKEST") {
+            this->schemeIdentifier = 5;
+        }
+
+        inputFile >> this->parameter;
+
+        printf("\ninitialConditionIdentifier: %d", this->initialConditionIdentifier);
+        printf("\nanalyticSolutionIdentifier: %d", this->analyticSolutionIdentifier);
+        printf("\nschemeIdentifier: %d", this->schemeIdentifier);
+
+
+    } catch (const exception e) {
+        printf("\nError in input file %s, example of valid input (may be outdated):\n", fileName);
+        printf("\nEquationType linearAdvection\ndomX -1.0 1.0\ndomT 0.0 0.25\ninitialCond 1\nuL null\nuR null\nanalyticSolution 1\ncfl 0.9\na 1.0\nv 0.0\ninterpolationScheme TOPUS 2.0\n");
+    }
+
+
+}
+
+int Solver::getInitialConditionIdentifier() const {
+    return initialConditionIdentifier;
+}
+
+int Solver::getAnalyticSolutionIdentifier() const {
+    return analyticSolutionIdentifier;
+}
+
+int Solver::getSchemeIdentifier() const {
+    return schemeIdentifier;
+}
+
+void Solver::setFuncAnalytic(double (*_funcAnalytic)(double, double)) {
+    Solver::funcAnalytic = _funcAnalytic;
+}
+
+void Solver::setFuncInitialCondition(double (*_funcInitialCondition)(double)) {
+    Solver::funcInitialCondition = _funcInitialCondition;
+}
+
+double Solver::getCfl() const {
+    return cfl;
+}
+
+double Solver::getV() const {
+    return v;
+}
+
+double Solver::getA() const {
+    return a;
 }

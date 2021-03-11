@@ -137,6 +137,33 @@ double analyticSolutionTest(double x, double t) {
     return u0(x - a * t, t, 2);
 }
 
+double initialCond1(double x) {
+    return u0(x, 0.0, 1);
+}
+
+double initialCond2(double x) {
+    return u0(x, 0.0, 2);
+}
+
+double initialCond3(double x) {
+    return u0(x, 0.0, 3);
+}
+
+double analyticSolution1(double x, double t) {
+    double a = 1.0;
+    return u0(x - a * t, t, 1);
+}
+
+double analyticSolution2(double x, double t) {
+    double a = 1.0;
+    return u0(x - a * t, t, 2);
+}
+
+double analyticSolution3(double x, double t) {
+    double a = 1.0;
+    return u0(x - a * t, t, 3);
+}
+
 void testSolver() {
 
     double a = 1.0, v = 0.0, cfl = 0.9;
@@ -149,14 +176,81 @@ void testSolver() {
     domT[1] = 0.25;
 
     auto *solver = new Solver(400, domX, domT, initialCondTest, initialCondTest(domX[0]),
-                                initialCondTest(domX[1]), analyticSolutionTest, EquationType::linearAdvection);
+                              initialCondTest(domX[1]), analyticSolutionTest, EquationType::linearAdvection);
 
     solver->solve(cfl, v, a, "OUTPUT", UpwindSchemes::TOPUS, 2.0, true);
 }
 
-int main() {
+void testReadFromFile(char *inputFile) {
+    auto *solver = new Solver();
+    solver->readFile(inputFile);
 
-    testSolver();
+    switch (solver->getInitialConditionIdentifier()) {
+        case 1:
+            solver->setFuncInitialCondition(initialCond1);
+            break;
+        case 2:
+            solver->setFuncInitialCondition(initialCond2);
+            break;
+        case 3:
+            solver->setFuncInitialCondition(initialCond3);
+            break;
+        default:
+            solver->setFuncInitialCondition(initialCond1);
+            break;
+    }
+
+    switch (solver->getAnalyticSolutionIdentifier()) {
+        case 1:
+            solver->setFuncAnalytic(analyticSolution1);
+            break;
+        case 2:
+            solver->setFuncAnalytic(analyticSolution2);
+            break;
+        case 3:
+            solver->setFuncAnalytic(analyticSolution3);
+            break;
+        default:
+            solver->setFuncAnalytic(analyticSolution1);
+            break;
+    }
+
+    double (*scheme)(double, double);
+    switch (solver->getSchemeIdentifier()) {
+        case 1:
+            scheme = UpwindSchemes::TOPUS;
+            break;
+        case 2:
+            scheme = UpwindSchemes::FSFL;
+            break;
+        case 3:
+            scheme = UpwindSchemes::EPUS;
+            break;
+        case 4:
+            scheme = UpwindSchemes::SDPUS_C1;
+            break;
+        case 5:
+            scheme = UpwindSchemes::ADBQUICKEST;
+            break;
+        default:
+            scheme = UpwindSchemes::TOPUS;
+            break;
+    }
+
+    solver->solve(solver->getCfl(), solver->getV(), solver->getA(), "OUTPUT", scheme, 2.0, true);
+}
+
+int main(int c, char *argv[]) {
+
+
+    char *inputFile, *outputFolder;
+
+    inputFile = argv[1];
+    outputFolder = argv[2];
+
+    printf("inputFile: %s\noutputFolder: %s\n", inputFile, outputFolder);
+
+    testReadFromFile(inputFile);
 
     return 0;
 }

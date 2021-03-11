@@ -21,13 +21,15 @@ private:
 
     const char *folderName;
 
-    double (*schemeFunction)(double, double);
+    double (*funcInterpolationScheme)(double, double);
 
     double (*funcAnalytic)(double, double);
 
     double (*funcInitialCondition)(double);
 
     bool isLogActive = false;
+
+    int initialConditionIdentifier, analyticSolutionIdentifier, schemeIdentifier = -1;
 
     EquationType equationType;
 
@@ -59,13 +61,32 @@ private:
 
 public:
 
+    int getInitialConditionIdentifier() const;
+
+    int getAnalyticSolutionIdentifier() const;
+
+    int getSchemeIdentifier() const;
+
+    double getCfl() const;
+
+    double getV() const;
+
+    double getA() const;
+
+    void setFuncAnalytic(double (*funcAnalytic)(double, double));
+
+    void setFuncInitialCondition(double (*funcInitialCondition)(double));
 
     Solver(int nx, double *domX, double *domT, double (*funcInitialCondition)(double), double uL, double uR,
            double (*funcAnalytic)(double, double), EquationType equationType);
 
+    Solver(){}
+
     void solve(double _cfl, double _v, double _a, const char *_folderName, double (*_schemeFunction)(double, double), double _parameter, bool _isLogActive);
 
     double **getValues();
+
+    void readFile(char *fileName);
 
 };
 
