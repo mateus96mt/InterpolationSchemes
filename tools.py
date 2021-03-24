@@ -1,4 +1,4 @@
-#MATEUS TEIXEIRA MAGALHÃƒES - UFJF - PGMC
+#MATEUS TEIXEIRA MAGALHAES - UFJF - PGMC
 #github repository: https://github.com/mateus96mt/InterpolationSchemes.git
 
 import os

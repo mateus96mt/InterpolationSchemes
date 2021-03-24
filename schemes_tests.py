@@ -1,9 +1,10 @@
-#MATEUS TEIXEIRA MAGALHÃƒES - UFJF - PGMC
+#MATEUS TEIXEIRA MAGALHAES - UFJF - PGMC
 #github repository: https://github.com/mateus96mt/InterpolationSchemes.git
 
 import numpy as np
 import matplotlib.pyplot as plt
 import upwind_schemes as SCHEMES
+import flux_limiters as FLUX_LIMITERS
 import os
 
 def generate_TVD_Harten(color='b'):
@@ -21,7 +22,24 @@ def generate_TVD_Harten(color='b'):
     plt.plot([x[1], x[-1]], [y[1], y[-1]], color='black')
     plt.tight_layout()
     plt.savefig('SCHEMES_TESTS/TVD_Harten.png', dpi=100)
+
+def generate_TVD_Sweb(color='b', xmax=4.0):
     
+    x, y, = [0.0, 1.0, xmax, xmax], [0.0, 2.0, 2.0, 0.0]
+
+    plt.figure(figsize=(8, 8))
+    plt.ylim(0.0, 2.5)
+    plt.xlim(0.0, xmax)
+    plt.xlabel(r'$r_f$', fontsize=18)
+    plt.ylabel(r'$\psi$', fontsize=18, rotation=0)
+    plt.title('Região TVD de Sweby')
+    plt.fill(x, y, color=color, label = 'Região TVD de Sweby')
+    plt.plot([x[0], x[1]], [y[0], y[1]], color='black')
+    plt.plot([x[1], x[2]], [y[1], y[2]], color='black')
+    
+    plt.tight_layout()
+    plt.savefig('SCHEMES_TESTS/TVD_Sweb.png', dpi=100)
+  
     
 def generate_CBC(color='b'):
     
@@ -62,9 +80,9 @@ def generate_OPQ_LEONARD(color='lightgray'):
     plt.tight_layout()
     plt.savefig('SCHEMES_TESTS/opq_leonard.png', dpi=100)
 
-def generate_scheme_curve(TVD_color, colors, params, n,\
+def generate_scheme_curve(TVD_color, colors, markers, params, n,\
                           param_name, SCHEME, SCHEME_NAME,
-                          fileName):
+                          fileName, markerpercent = 0.1):
     
     #create folder if not exist
     if not os.path.exists(fileName.split('/')[0]):
@@ -84,19 +102,61 @@ def generate_scheme_curve(TVD_color, colors, params, n,\
         
         color = colors[i]
         
+        marker = markers[i]
+        
         y_axes_FSFL = [SCHEME(x, param) for x in x_axes]
         
         
         plt.plot(x_axes, y_axes_FSFL,\
-                 label=str(param_name)+'='+str(param), color = color)
+                 label=str(param_name)+'='+str(param), color = color,\
+                 marker = marker, markevery = int(markerpercent*n))
         
     plt.legend(loc="best")
     
     plt.savefig(fileName, dpi=100)
 
-betas = [0.0, 1.0, 2.0]
+def generate_scheme_curve_LIM_FLUX(TVD_color, colors, markers, params, n,\
+                          param_name, SCHEME, SCHEME_NAME,
+                          fileName, xmax = 4.0, markerpercent = 0.1):
+    
+    #create folder if not exist
+    if not os.path.exists(fileName.split('/')[0]):
+        os.makedirs(fileName.split('/')[0])
+    
+    plt.ylim(0.0, 2.5)
+    
+    generate_TVD_Sweb(color=TVD_color, xmax = xmax)
+    
+    domx = [0.0, xmax]
+    
+    x_axes = np.linspace(domx[0], domx[1], n)
+    
+    plt.title(SCHEME_NAME)
+    
+    for i in range(len(params)):
+            
+        param = params[i]
+        
+        color = colors[i]
+        
+        marker = markers[i]
+        
+        y_axes_FSFL = [SCHEME(x, param) for x in x_axes]
+        
+        
+        plt.plot(x_axes, y_axes_FSFL,\
+                 label=str(param_name)+'='+str(param), color = color,\
+                 marker = marker, markevery = int(markerpercent*n))
+        
+    
+    plt.legend(loc="best")
+    
+    plt.savefig(fileName, dpi=100)
 
-alphas = [2.0, 2.8, 3.2]
+
+alphas = [-2.0, 0.0, 2.0]
+
+betas = [0.0, 1.0, 2.0]
 
 gammas = [4.0, 8.0, 12.0]
 
@@ -106,48 +166,80 @@ TVD_color = 'c'
 
 colors = ['b', 'r', 'g']
 
+markers = ['x', '.', '^']
+
+
 n = 100
 
 PATH = 'schemes_graphs/'
 
 #generate_TVD_Harten()
 #generate_CBC()
-generate_OPQ_LEONARD()
+#generate_OPQ_LEONARD()
 
 #param_name = r'$\beta$'
 #SCHEME = SCHEMES.FSFL
 #SCHEME_NAME = 'FSFL'
 #fileName = PATH + SCHEME_NAME + '.png'
-#generate_scheme_curve(TVD_color, colors, betas, n, param_name,\
+#generate_scheme_curve(TVD_color, colors, markers, betas, n, param_name,\
 #                      SCHEME, SCHEME_NAME, fileName)
 #
 #param_name = r'$\alpha$'
 #SCHEME = SCHEMES.TOPUS
 #SCHEME_NAME = 'TOPUS'
 #fileName = PATH + SCHEME_NAME + '.png'
-#generate_scheme_curve(TVD_color, colors, alphas, n, param_name,\
+#generate_scheme_curve(TVD_color, colors, markers, alphas, n, param_name,\
 #                      SCHEME, SCHEME_NAME, fileName)
 #
 #param_name = r'$\gamma$'
 #SCHEME = SCHEMES.SDPUS_C1
 #SCHEME_NAME = 'SDPUS_C1'
 #fileName = PATH + SCHEME_NAME + '.png'
-#generate_scheme_curve(TVD_color, colors, gammas, n, param_name,\
+#generate_scheme_curve(TVD_color, colors, markers, gammas, n, param_name,\
 #                      SCHEME, SCHEME_NAME, fileName)
 #
 #param_name = r'$\lambda$'
 #SCHEME = SCHEMES.EPUS
 #SCHEME_NAME = 'EPUS'
 #fileName = PATH + SCHEME_NAME + '.png'
-#generate_scheme_curve(TVD_color, colors, lams, n, param_name,\
+#generate_scheme_curve(TVD_color, colors, markers, lams, n, param_name,\
 #                      SCHEME, SCHEME_NAME, fileName)
 
 
 
+TVD_color = 'khaki'
+
+param_name = r'$\alpha$'
+SCHEME = FLUX_LIMITERS.TOPUS
+SCHEME_NAME = 'TOPUS'
+fileName = PATH + SCHEME_NAME + '.png'
+generate_scheme_curve_LIM_FLUX(TVD_color, colors, markers, alphas, n, param_name,\
+                      SCHEME, SCHEME_NAME, fileName, xmax = 4.0, markerpercent=0.05)
+
+param_name = r'$\beta$'
+SCHEME = FLUX_LIMITERS.FSFL
+SCHEME_NAME = 'FSFL'
+fileName = PATH + SCHEME_NAME + '.png'
+generate_scheme_curve_LIM_FLUX(TVD_color, colors, markers, betas, n, param_name,\
+                      SCHEME, SCHEME_NAME, fileName, xmax = 20.0, markerpercent=0.05)
 
 
+param_name = r'$\gamma$'
+SCHEME = FLUX_LIMITERS.SDPUS_C1
+SCHEME_NAME = 'SDPUS_C1'
+fileName = PATH + SCHEME_NAME + '.png'
+generate_scheme_curve_LIM_FLUX(TVD_color, colors, markers, gammas, n, param_name,\
+                      SCHEME, SCHEME_NAME, fileName, xmax = 3.0, markerpercent=0.05)
+
+param_name = r'$\lambda$'
+SCHEME = FLUX_LIMITERS.EPUS
+SCHEME_NAME = 'EPUS'
+fileName = PATH + SCHEME_NAME + '.png'
+generate_scheme_curve_LIM_FLUX(TVD_color, colors, markers, lams, n, param_name,\
+                      SCHEME, SCHEME_NAME, fileName, xmax = 3.0, markerpercent=0.05)
 
 
+#generate_TVD_Sweb(color='khaki', xmax=20.0)
 
 
 
