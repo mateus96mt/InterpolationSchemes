@@ -1,0 +1,22 @@
+declare -a schemes=("TOPUS" "FSFL" "SDPUS_C1" "EPUS")
+declare -a params=(-2.0 0.0 2.0 0.0 1.0 2.0 4.0 8.0 12.0 16.0 55.5 95.0)
+
+for scheme_index in `seq 0 3`
+do
+    
+    for param_index in `seq 0 2`;
+    do
+        i=$((scheme_index*3+param_index))
+        #echo "${schemes[${scheme_index}]}:${params[${i}]}"
+        folder="${schemes[${scheme_index}]}_${params[${i}]}"
+        mkdir -p "$folder"
+        #echo "$folder"
+        #echo "${schemes[${scheme_index}]}"
+        #echo "${params[${i}]}"
+        #echo ""
+        eval "./solver ${folder} linearAdvection 400 -1.0 1.0 0.0 0.25 2 null null 2 0.9 1.0 0.0 ${schemes[${scheme_index}]} ${params[${i}]}"
+
+    done;
+    
+done;
+ 
