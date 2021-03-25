@@ -166,16 +166,16 @@ TVD_color = 'c'
 
 colors = ['b', 'r', 'g']
 
-markers = ['x', '.', '^']
+markers = ['+', '.', '^']
 
 
 n = 100
 
-PATH = 'schemes_graphs/'
+PATH = 'schemes_graphs_norm_var/'
 
-#generate_TVD_Harten()
-#generate_CBC()
-#generate_OPQ_LEONARD()
+generate_TVD_Harten(color='c')
+generate_CBC(color='c')
+generate_OPQ_LEONARD()
 
 #param_name = r'$\beta$'
 #SCHEME = SCHEMES.FSFL
@@ -204,41 +204,41 @@ PATH = 'schemes_graphs/'
 #fileName = PATH + SCHEME_NAME + '.png'
 #generate_scheme_curve(TVD_color, colors, markers, lams, n, param_name,\
 #                      SCHEME, SCHEME_NAME, fileName)
-
-
-
-TVD_color = 'khaki'
-
-param_name = r'$\alpha$'
-SCHEME = FLUX_LIMITERS.TOPUS
-SCHEME_NAME = 'TOPUS'
-fileName = PATH + SCHEME_NAME + '.png'
-generate_scheme_curve_LIM_FLUX(TVD_color, colors, markers, alphas, n, param_name,\
-                      SCHEME, SCHEME_NAME, fileName, xmax = 4.0, markerpercent=0.05)
-
-param_name = r'$\beta$'
-SCHEME = FLUX_LIMITERS.FSFL
-SCHEME_NAME = 'FSFL'
-fileName = PATH + SCHEME_NAME + '.png'
-generate_scheme_curve_LIM_FLUX(TVD_color, colors, markers, betas, n, param_name,\
-                      SCHEME, SCHEME_NAME, fileName, xmax = 20.0, markerpercent=0.05)
-
-
-param_name = r'$\gamma$'
-SCHEME = FLUX_LIMITERS.SDPUS_C1
-SCHEME_NAME = 'SDPUS_C1'
-fileName = PATH + SCHEME_NAME + '.png'
-generate_scheme_curve_LIM_FLUX(TVD_color, colors, markers, gammas, n, param_name,\
-                      SCHEME, SCHEME_NAME, fileName, xmax = 3.0, markerpercent=0.05)
-
-param_name = r'$\lambda$'
-SCHEME = FLUX_LIMITERS.EPUS
-SCHEME_NAME = 'EPUS'
-fileName = PATH + SCHEME_NAME + '.png'
-generate_scheme_curve_LIM_FLUX(TVD_color, colors, markers, lams, n, param_name,\
-                      SCHEME, SCHEME_NAME, fileName, xmax = 3.0, markerpercent=0.05)
-
-
+#
+#PATH = 'schemes_graphs_lim_flux/'
+#
+#TVD_color = 'khaki'
+#
+#param_name = r'$\alpha$'
+#SCHEME = FLUX_LIMITERS.TOPUS
+#SCHEME_NAME = 'TOPUS'
+#fileName = PATH + SCHEME_NAME + '.png'
+#generate_scheme_curve_LIM_FLUX(TVD_color, colors, markers, alphas, n, param_name,\
+#                      SCHEME, SCHEME_NAME, fileName, xmax = 4.0, markerpercent=0.05)
+#
+#param_name = r'$\beta$'
+#SCHEME = FLUX_LIMITERS.FSFL
+#SCHEME_NAME = 'FSFL'
+#fileName = PATH + SCHEME_NAME + '.png'
+#generate_scheme_curve_LIM_FLUX(TVD_color, colors, markers, betas, n, param_name,\
+#                      SCHEME, SCHEME_NAME, fileName, xmax = 20.0, markerpercent=0.05)
+#
+#
+#param_name = r'$\gamma$'
+#SCHEME = FLUX_LIMITERS.SDPUS_C1
+#SCHEME_NAME = 'SDPUS_C1'
+#fileName = PATH + SCHEME_NAME + '.png'
+#generate_scheme_curve_LIM_FLUX(TVD_color, colors, markers, gammas, n, param_name,\
+#                      SCHEME, SCHEME_NAME, fileName, xmax = 3.0, markerpercent=0.05)
+#
+#param_name = r'$\lambda$'
+#SCHEME = FLUX_LIMITERS.EPUS
+#SCHEME_NAME = 'EPUS'
+#fileName = PATH + SCHEME_NAME + '.png'
+#generate_scheme_curve_LIM_FLUX(TVD_color, colors, markers, lams, n, param_name,\
+#                      SCHEME, SCHEME_NAME, fileName, xmax = 3.0, markerpercent=0.05)
+#
+#
 #generate_TVD_Sweb(color='khaki', xmax=20.0)
 
 
