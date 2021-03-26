@@ -174,10 +174,15 @@ double Solver::interpolateUf(const double *u, int i, double velFaceF,
         return phiU;
     } else {
         double phiUNorm = normVar(phiU, phiD, phiR);
-        double phiFNorm = this->funcInterpolationScheme(phiUNorm, this->parameter);
-        double phiF = phiR + ((phiD - phiR) * phiFNorm);
+        if (phiUNorm < 0.0 || phiUNorm > 1.0) {
+            return phiU;
+        } else {
+            double phiFNorm = this->funcInterpolationScheme(phiUNorm, this->parameter);
+            double phiF = phiR + ((phiD - phiR) * phiFNorm);
 
-        return phiF;
+            return phiF;
+        }
+
     }
 
 }
@@ -208,10 +213,14 @@ double Solver::interpolateUg(const double *u, int i, double velFaceG,
         return phiU;
     } else {
         double phiUNorm = normVar(phiU, phiD, phiR);
-        double phiFNorm = this->funcInterpolationScheme(phiUNorm, this->parameter);
-        double phiF = phiR + ((phiD - phiR) * phiFNorm);
+        if (phiUNorm < 0.0 || phiUNorm > 1.0) {
+            return phiU;
+        } else {
+            double phiFNorm = this->funcInterpolationScheme(phiUNorm, this->parameter);
+            double phiF = phiR + ((phiD - phiR) * phiFNorm);
 
-        return phiF;
+            return phiF;
+        }
     }
 
 }

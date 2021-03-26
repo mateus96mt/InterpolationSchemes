@@ -78,6 +78,8 @@ def solutionOverTime():
 
 def param_compar_graficos_TOPUS():
              
+    plt.xlim([-0.2, 1.1])
+    
     name = "TOPUS_"
     
     params = np.linspace(-2.0, 2.0, 3)
@@ -93,21 +95,21 @@ def param_compar_graficos_TOPUS():
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num =readOutPut(_input)
-    plt.plot(x, y_num, 'x', color='green', ms=2.5, 
+    plt.plot(x, y_num, '+', color='green', ms=5.0, 
              label=r'$\alpha=' + str(param) + '$')
     
     param = params[1]
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num = readOutPut(_input)
-    plt.plot(x, y_num, '.', color='blue', ms=2.5, 
+    plt.plot(x, y_num, '.', color='blue', ms=5.0, 
              label=r'$\alpha=' + str(param) + '$')
     
     param = params[2]
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num = readOutPut(_input)
-    plt.plot(x, y_num, 'v', color='tab:blue', ms=2.5, 
+    plt.plot(x, y_num, 'v', color='tab:blue', ms=3.0, 
              label=r'$\alpha=' + str(param) + '$')
     
     
@@ -124,7 +126,9 @@ def param_compar_graficos_TOPUS():
     plt.clf()
     
 def param_compar_graficos_FSFL():
-              
+             
+    plt.xlim([-0.2, 1.1])
+    
     name = "FSFL_"
     
     params = np.linspace(0.0, 2.0, 3)
@@ -140,21 +144,21 @@ def param_compar_graficos_FSFL():
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num = readOutPut(_input)
-    plt.plot(x, y_num, 'x', color='green', ms=2.5, 
+    plt.plot(x, y_num, '+', color='green', ms=5.0, 
              label=r'$\beta=' + str(param) + '$')
     
     param = params[1]
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num = readOutPut(_input)
-    plt.plot(x, y_num, '.', color='blue', ms=2.5, 
+    plt.plot(x, y_num, '.', color='blue', ms=5.0, 
              label=r'$\beta=' + str(param) + '$')
     
     param = params[2]
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num = readOutPut(_input)
-    plt.plot(x, y_num, 'v', color='tab:blue', ms=2.5, 
+    plt.plot(x, y_num, 'v', color='tab:blue', ms=3.0, 
              label=r'$\beta=' + str(param) + '$')
     
     
@@ -172,6 +176,8 @@ def param_compar_graficos_FSFL():
     
 def param_compar_graficos_EPUS():
               
+    plt.xlim([-0.2, 1.1])
+    
     name = "EPUS_"
     
     params = np.linspace(16.0, 95.0, 3)
@@ -187,21 +193,21 @@ def param_compar_graficos_EPUS():
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num = readOutPut(_input)
-    plt.plot(x, y_num, 'x', color='green', ms=2.5, 
+    plt.plot(x, y_num, '+', color='green', ms=5.0, 
              label=r'$\lambda=' + str(param) + '$')
     
     param = params[1]
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num = readOutPut(_input)
-    plt.plot(x, y_num, '.', color='blue', ms=2.5, 
+    plt.plot(x, y_num, '.', color='blue', ms=5.0, 
              label=r'$\lambda=' + str(param) + '$')
     
     param = params[2]
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num = readOutPut(_input)
-    plt.plot(x, y_num, 'v', color='tab:blue', ms=2.5, 
+    plt.plot(x, y_num, 'v', color='tab:blue', ms=3.0, 
              label=r'$\lambda=' + str(param) + '$')
     
     
@@ -219,6 +225,8 @@ def param_compar_graficos_EPUS():
     
 def param_compar_graficos_SDPUS():
               
+    plt.xlim([-0.2, 1.1])
+    
     name = "SDPUS_C1_"
     
     params = np.linspace(4.0, 12.0, 3)
@@ -234,21 +242,21 @@ def param_compar_graficos_SDPUS():
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num = readOutPut(_input)
-    plt.plot(x, y_num, 'x', color='green', ms=2.5, 
+    plt.plot(x, y_num, '+', color='green', ms=5.0, 
              label=r'$\gamma=' + str(param) + '$')
     
     param = params[1]
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num = readOutPut(_input)
-    plt.plot(x, y_num, '.', color='blue', ms=2.5, 
+    plt.plot(x, y_num, '.', color='blue', ms=5.0, 
              label=r'$\gamma=' + str(param) + '$')
     
     param = params[2]
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num = readOutPut(_input)
-    plt.plot(x, y_num, 'v', color='tab:blue', ms=2.5, 
+    plt.plot(x, y_num, 'v', color='tab:blue', ms=3.0, 
              label=r'$\gamma=' + str(param) + '$')
     
     
@@ -321,7 +329,7 @@ def readErrors(fileName, folderName, cfl, n = 8):
 #param_compar_graficos_SDPUS()
 #param_compar_graficos_EPUS()
     
-#readErrors("erros_cfl_0.05.txt", "ERROS_cfl=0.05", 0.9, n=8)
+#readErrors("erros_cfl_0.9.txt", "ERROS_cfl=0.9", 0.9, n=8)
 
 
 
