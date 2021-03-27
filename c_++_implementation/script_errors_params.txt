@@ -17,7 +17,8 @@ do
         #echo "${schemes[${scheme_index}]}"
         #echo "${params[${i}]}"
         #echo ""
-        eval "./solver ${folder} linearAdvection 400 -1.0 1.0 0.0 0.25 2 null null 2 0.9 1.0 0.0 ${schemes[${scheme_index}]} ${params[${i}]}"
+        #eval "./solver ${folder} linearAdvection 400 0.0 2.0 0.0 1.0 1 null null 1 0.05 1.0 0.0 ${schemes[${scheme_index}]} ${params[${i}]}"
+        eval "./solver ${folder} linearAdvection 400 -1.0 1.0 0.0 0.25 2 null null 2 0.5 1.0 0.0 ${schemes[${scheme_index}]} ${params[${i}]}"
 
     done;
     

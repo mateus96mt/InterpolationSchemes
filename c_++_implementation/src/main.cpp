@@ -61,29 +61,24 @@ void testCalculateError() {
 double u0(double x, double t, int _case = 2) {
 
     if (_case == 1) {
-        if (x >= 0 && x < 0.2) {
-            double n = pow(((x - 0.15) / 0.05), 2);
-            return exp(-(log(n) / log(50)));
+        if ((x >= 0.0) && (x < 0.2)) {
+            return exp(-log(50.0) * ((x - 0.15) / (0.05)) * ((x - 0.15) / (0.05)));
         }
-
-
-        if (x > 0.3 && x < 0.4) {
+        if ((x > 0.3) && (x < 0.4)) {
             return 1.0;
         }
-
-        if (x > 0.5 && x < 0.55) {
+        if ((x > 0.5) && (x < 0.55)) {
             return 20.0 * x - 10.0;
         }
-
-        if (x >= 0.55 && x < 0.66) {
-            return -20.0 * x + 12.0;
+        if ((x >= 0.55) && (x < 0.6)) {
+            return 12.0 - 20.0 * x;
         }
-
-        if (x > 0.7 && x < 0.8) {
-            return sqrt(1 - pow(((x - 0.75) / 0.05), 2));
+        if ((x > 0.7) && (x < 0.8)) {
+            return sqrt(1.0 - ((x - 0.75) / (0.05)) * ((x - 0.75) / (0.05)));
         }
-
-        return 0.0;
+        if ((x > 0.8) && (x <= 2.0)) {
+            return 0.0;
+        }
     }
 
     if (_case == 2) {

@@ -25,10 +25,41 @@ def readOutPut(fileName):
         
     return x, y_exata, y_num             
 
-def solutionOverTime():
+def solutionOverTimeOneSchemeOneParam(n, name, params_name, scheme_index,\
+                                      param_value, schemes, ylims, xlims, interval = 1):
     
-    n = 56
+    for i in range(n):
+                
 
+        if i % interval == 0:        
+            
+            sub_path = name
+            _input = sub_path + "/" + str(i) + ".data"
+            x, y_exata, y_num = readOutPut(_input)
+            
+            plt.plot(x, y_exata, linewidth=1.0, color='red', label="Solução exata")
+            sub_path = name
+            _input = sub_path + "/" + str(i) + ".data"
+            x, y_exata, y_num = readOutPut(_input)
+            plt.plot(x, y_num, 'x', color='green', ms=2.5, 
+                     label=r'$' + params_name[scheme_index] +  '=' + str(param_value) + '$')
+            
+            plt.grid(True, linestyle='--')
+            plt.title('Esquema ' + schemes[scheme_index])
+            plt.legend(loc="best")
+            plt.xlabel(r'$\mathrm{x}$')
+            plt.ylabel(r'$\mathrm{u}$')
+            plt.ylim(ylims)
+            plt.xlim(xlims)
+            plt.tight_layout()
+            
+            plt.savefig(_input.split('/')[0]+'/'+_input.split('/')[1] + '.png', dpi = 200)
+            plt.cla()
+            plt.clf()
+            plt.show()
+
+def solutionOverTime(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2], n = 56):
+    
     schemes = ["TOPUS", "FSFL", "SDPUS_C1", "EPUS"]
     params_name = ["\\alpha", "\\beta", "\\gamma", "\\lambda"]
     
@@ -49,36 +80,13 @@ def solutionOverTime():
             
             print(name)
             
-            for i in range(n):
-                                
-                sub_path = name
-                _input = sub_path + "/" + str(i) + ".data"
-                x, y_exata, y_num = readOutPut(_input)
-                
-                plt.plot(x, y_exata, linewidth=1.0, color='red', label="Solução exata")
-                sub_path = name
-                _input = sub_path + "/" + str(i) + ".data"
-                x, y_exata, y_num = readOutPut(_input)
-                plt.plot(x, y_num, 'x', color='green', ms=2.5, 
-                         label=r'$' + params_name[scheme_index] +  '=' + str(param_value) + '$')
-                
-                plt.grid(True, linestyle='--')
-                plt.title('Esquema ' + schemes[scheme_index])
-                plt.legend(loc="best")
-                plt.xlabel(r'$\mathrm{x}$')
-                plt.ylabel(r'$\mathrm{u}$')
-                plt.ylim([-1.2, 1.2])
-                plt.tight_layout()
-                
-                plt.savefig(_input.split('/')[0]+'/'+_input.split('/')[1] + '.png', dpi = 200)
-                plt.cla()
-                plt.clf()
-                plt.show()
+            solutionOverTimeOneSchemeOneParam(n, name, params_name, scheme_index,\
+                                      param_value, schemes, ylims, xlims)
 
 
-def param_compar_graficos_TOPUS():
+def param_compar_graficos_TOPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2]):
              
-    plt.xlim([-0.2, 1.1])
+    plt.xlim(xlims)
     
     name = "TOPUS_"
     
@@ -118,16 +126,16 @@ def param_compar_graficos_TOPUS():
     plt.legend(loc="best")
     plt.xlabel(r'$\mathrm{x}$')
     plt.ylabel(r'$\mathrm{u}$')
-    plt.ylim([-1.2, 1.2])
+    plt.ylim(ylims)
     plt.tight_layout()
     
     plt.savefig(name + '_param_comp' + '.png', dpi = 200)
     plt.cla()
     plt.clf()
     
-def param_compar_graficos_FSFL():
+def param_compar_graficos_FSFL(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2]):
              
-    plt.xlim([-0.2, 1.1])
+    plt.xlim(xlims)
     
     name = "FSFL_"
     
@@ -167,16 +175,16 @@ def param_compar_graficos_FSFL():
     plt.legend(loc="best")
     plt.xlabel(r'$\mathrm{x}$')
     plt.ylabel(r'$\mathrm{u}$')
-    plt.ylim([-1.2, 1.2])
+    plt.ylim(ylims)
     plt.tight_layout()
     
     plt.savefig(name + '_param_comp' + '.png', dpi = 200)
     plt.cla()
     plt.clf()
     
-def param_compar_graficos_EPUS():
+def param_compar_graficos_EPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2]):
               
-    plt.xlim([-0.2, 1.1])
+    plt.xlim(xlims)
     
     name = "EPUS_"
     
@@ -216,16 +224,16 @@ def param_compar_graficos_EPUS():
     plt.legend(loc="best")
     plt.xlabel(r'$\mathrm{x}$')
     plt.ylabel(r'$\mathrm{u}$')
-    plt.ylim([-1.2, 1.2])
+    plt.ylim(ylims)
     plt.tight_layout()
     
     plt.savefig(name + '_param_comp' + '.png', dpi = 200)
     plt.cla()
     plt.clf()
     
-def param_compar_graficos_SDPUS():
+def param_compar_graficos_SDPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2]):
               
-    plt.xlim([-0.2, 1.1])
+    plt.xlim(xlims)
     
     name = "SDPUS_C1_"
     
@@ -265,7 +273,7 @@ def param_compar_graficos_SDPUS():
     plt.legend(loc="best")
     plt.xlabel(r'$\mathrm{x}$')
     plt.ylabel(r'$\mathrm{u}$')
-    plt.ylim([-1.2, 1.2])
+    plt.ylim(ylims)
     plt.tight_layout()
     
     plt.savefig(name + '_param_comp' + '.png', dpi = 200)
@@ -320,19 +328,55 @@ def readErrors(fileName, folderName, cfl, n = 8):
         plt.cla()
         plt.clf()
     
+def generateAnalytic(name =  "TOPUS_"):
     
+    sub_path = name + str(2.0)
+    _input = sub_path + "/0.data"
+    x, y_exata, y_num = readOutPut(_input)
     
+    plt.plot(x, y_exata, linewidth=1.0, color='red')
+    
+    plt.grid(True, linestyle='--')
+    plt.xlabel(r'$\mathrm{x}$')
+    plt.ylabel(r'$\mathrm{u}$')
+    plt.tight_layout()
+    
+    plt.savefig('analitica' + '.png', dpi = 200)
+    plt.cla()
+    plt.clf()
+
+
+#generateAnalytic("TOPUS_")
+
 #solutionOverTime()
     
-#param_compar_graficos_TOPUS()
-#param_compar_graficos_FSFL()
-#param_compar_graficos_SDPUS()
-#param_compar_graficos_EPUS()
+param_compar_graficos_TOPUS(xlims = [-1.1, 1.1], ylims = [-1.2, 1.1])
+param_compar_graficos_FSFL(xlims = [-1.1, 1.1], ylims = [-1.2, 1.1])
+param_compar_graficos_SDPUS(xlims = [-1.1, 1.1], ylims = [-1.2, 1.1])
+param_compar_graficos_EPUS(xlims = [-1.1, 1.1], ylims = [-1.2, 1.1])
     
-#readErrors("erros_cfl_0.9.txt", "ERROS_cfl=0.9", 0.9, n=8)
+#readErrors("erros_cfl_0.5.txt", "ERROS_cfl=0.5", 0.5, n=8)
 
 
 
+
+#n = 3990
+#
+#schemes = ["TOPUS", "FSFL", "SDPUS_C1", "EPUS"]
+#params_name = ["\\alpha", "\\beta", "\\gamma", "\\lambda"]
+#
+#param_value = 2.0
+#
+#scheme_index = 0
+#
+#name = schemes[scheme_index] + "_" + str(param_value)
+#
+#xlims = [0.0, 2.0]
+#
+#ylims = [-0.1, 1.2]
+#
+#solutionOverTimeOneSchemeOneParam(n, name, params_name, scheme_index,\
+#                                      param_value, schemes, ylims, xlims, interval = 100)
 
 
 
