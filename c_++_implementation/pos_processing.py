@@ -84,8 +84,10 @@ def solutionOverTime(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2], n = 56):
                                       param_value, schemes, ylims, xlims)
 
 
-def param_compar_graficos_TOPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2]):
-             
+def param_compar_graficos_TOPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2],\
+                                notPlotCountour = False):
+    
+    plt.figure(figsize=(8,8))
     plt.xlim(xlims)
     
     name = "TOPUS_"
@@ -96,13 +98,20 @@ def param_compar_graficos_TOPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2]):
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num = readOutPut(_input)
-    
+    if notPlotCountour:
+        
+        x, y_exata, y_num = x[1:-1], y_exata[1:-1], y_num[1:-1]
+        
     plt.plot(x, y_exata, linewidth=1.0, color='red', label="Solução exata")
     
     param = params[0]
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num =readOutPut(_input)
+    if notPlotCountour:
+        
+        x, y_exata, y_num = x[1:-1], y_exata[1:-1], y_num[1:-1]
+        
     plt.plot(x, y_num, '+', color='green', ms=5.0, 
              label=r'$\alpha=' + str(param) + '$')
     
@@ -110,6 +119,10 @@ def param_compar_graficos_TOPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2]):
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num = readOutPut(_input)
+    if notPlotCountour:
+        
+        x, y_exata, y_num = x[1:-1], y_exata[1:-1], y_num[1:-1]
+        
     plt.plot(x, y_num, '.', color='blue', ms=5.0, 
              label=r'$\alpha=' + str(param) + '$')
     
@@ -117,6 +130,10 @@ def param_compar_graficos_TOPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2]):
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num = readOutPut(_input)
+    if notPlotCountour:
+        
+        x, y_exata, y_num = x[1:-1], y_exata[1:-1], y_num[1:-1]
+        
     plt.plot(x, y_num, 'v', color='tab:blue', ms=3.0, 
              label=r'$\alpha=' + str(param) + '$')
     
@@ -133,7 +150,8 @@ def param_compar_graficos_TOPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2]):
     plt.cla()
     plt.clf()
     
-def param_compar_graficos_FSFL(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2]):
+def param_compar_graficos_FSFL(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2],\
+                               notPlotCountour = False):
              
     plt.xlim(xlims)
     
@@ -145,6 +163,9 @@ def param_compar_graficos_FSFL(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2]):
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num = readOutPut(_input)
+    if notPlotCountour:
+        
+        x, y_exata, y_num = x[1:-1], y_exata[1:-1], y_num[1:-1]
     
     plt.plot(x, y_exata, linewidth=1.0, color='red', label="Solução exata")
     
@@ -152,6 +173,10 @@ def param_compar_graficos_FSFL(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2]):
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num = readOutPut(_input)
+    if notPlotCountour:
+        
+        x, y_exata, y_num = x[1:-1], y_exata[1:-1], y_num[1:-1]
+        
     plt.plot(x, y_num, '+', color='green', ms=5.0, 
              label=r'$\beta=' + str(param) + '$')
     
@@ -159,6 +184,10 @@ def param_compar_graficos_FSFL(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2]):
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num = readOutPut(_input)
+    if notPlotCountour:
+        
+        x, y_exata, y_num = x[1:-1], y_exata[1:-1], y_num[1:-1]
+        
     plt.plot(x, y_num, '.', color='blue', ms=5.0, 
              label=r'$\beta=' + str(param) + '$')
     
@@ -166,6 +195,10 @@ def param_compar_graficos_FSFL(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2]):
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num = readOutPut(_input)
+    if notPlotCountour:
+        
+        x, y_exata, y_num = x[1:-1], y_exata[1:-1], y_num[1:-1]
+        
     plt.plot(x, y_num, 'v', color='tab:blue', ms=3.0, 
              label=r'$\beta=' + str(param) + '$')
     
@@ -182,7 +215,8 @@ def param_compar_graficos_FSFL(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2]):
     plt.cla()
     plt.clf()
     
-def param_compar_graficos_EPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2]):
+def param_compar_graficos_EPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2],\
+                               notPlotCountour = False):
               
     plt.xlim(xlims)
     
@@ -194,6 +228,9 @@ def param_compar_graficos_EPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2]):
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num = readOutPut(_input)
+    if notPlotCountour:
+        
+        x, y_exata, y_num = x[1:-1], y_exata[1:-1], y_num[1:-1]
     
     plt.plot(x, y_exata, linewidth=1.0, color='red', label="Solução exata")
     
@@ -201,6 +238,10 @@ def param_compar_graficos_EPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2]):
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num = readOutPut(_input)
+    if notPlotCountour:
+        
+        x, y_exata, y_num = x[1:-1], y_exata[1:-1], y_num[1:-1]
+        
     plt.plot(x, y_num, '+', color='green', ms=5.0, 
              label=r'$\lambda=' + str(param) + '$')
     
@@ -208,6 +249,10 @@ def param_compar_graficos_EPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2]):
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num = readOutPut(_input)
+    if notPlotCountour:
+        
+        x, y_exata, y_num = x[1:-1], y_exata[1:-1], y_num[1:-1]
+        
     plt.plot(x, y_num, '.', color='blue', ms=5.0, 
              label=r'$\lambda=' + str(param) + '$')
     
@@ -215,6 +260,10 @@ def param_compar_graficos_EPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2]):
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num = readOutPut(_input)
+    if notPlotCountour:
+        
+        x, y_exata, y_num = x[1:-1], y_exata[1:-1], y_num[1:-1]
+        
     plt.plot(x, y_num, 'v', color='tab:blue', ms=3.0, 
              label=r'$\lambda=' + str(param) + '$')
     
@@ -231,7 +280,8 @@ def param_compar_graficos_EPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2]):
     plt.cla()
     plt.clf()
     
-def param_compar_graficos_SDPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2]):
+def param_compar_graficos_SDPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2],\
+                                notPlotCountour = False):
               
     plt.xlim(xlims)
     
@@ -243,6 +293,9 @@ def param_compar_graficos_SDPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2]):
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num = readOutPut(_input)
+    if notPlotCountour:
+        
+        x, y_exata, y_num = x[1:-1], y_exata[1:-1], y_num[1:-1]
     
     plt.plot(x, y_exata, linewidth=1.0, color='red', label="Solução exata")
     
@@ -250,6 +303,10 @@ def param_compar_graficos_SDPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2]):
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num = readOutPut(_input)
+    if notPlotCountour:
+        
+        x, y_exata, y_num = x[1:-1], y_exata[1:-1], y_num[1:-1]
+        
     plt.plot(x, y_num, '+', color='green', ms=5.0, 
              label=r'$\gamma=' + str(param) + '$')
     
@@ -257,6 +314,10 @@ def param_compar_graficos_SDPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2]):
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num = readOutPut(_input)
+    if notPlotCountour:
+        
+        x, y_exata, y_num = x[1:-1], y_exata[1:-1], y_num[1:-1]
+        
     plt.plot(x, y_num, '.', color='blue', ms=5.0, 
              label=r'$\gamma=' + str(param) + '$')
     
@@ -264,6 +325,10 @@ def param_compar_graficos_SDPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2]):
     sub_path = name + str(param)
     _input = sub_path + "/FINAL.data"
     x, y_exata, y_num = readOutPut(_input)
+    if notPlotCountour:
+        
+        x, y_exata, y_num = x[1:-1], y_exata[1:-1], y_num[1:-1]
+        
     plt.plot(x, y_num, 'v', color='tab:blue', ms=3.0, 
              label=r'$\gamma=' + str(param) + '$')
     
@@ -350,12 +415,12 @@ def generateAnalytic(name =  "TOPUS_"):
 
 #solutionOverTime()
     
-param_compar_graficos_TOPUS(xlims = [-1.1, 1.1], ylims = [-1.2, 1.1])
-param_compar_graficos_FSFL(xlims = [-1.1, 1.1], ylims = [-1.2, 1.1])
-param_compar_graficos_SDPUS(xlims = [-1.1, 1.1], ylims = [-1.2, 1.1])
-param_compar_graficos_EPUS(xlims = [-1.1, 1.1], ylims = [-1.2, 1.1])
+param_compar_graficos_TOPUS(xlims = [1.0, 1.9], ylims = [-0.1, 1.1], notPlotCountour = True)
+param_compar_graficos_FSFL(xlims = [1.0, 1.9], ylims = [-0.1, 1.1], notPlotCountour = True)
+param_compar_graficos_SDPUS(xlims = [1.0, 1.9], ylims = [-0.1, 1.1], notPlotCountour = True)
+param_compar_graficos_EPUS(xlims = [1.0, 1.9], ylims = [-0.1, 1.1], notPlotCountour = True)
     
-#readErrors("erros_cfl_0.5.txt", "ERROS_cfl=0.5", 0.5, n=8)
+#readErrors("erros_cfl_0.05.txt", "ERROS_cfl=0.05", 0.05, n=8)
 
 
 

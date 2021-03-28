@@ -17,7 +17,7 @@ Tools::calculateError(double (*funcAnalytic)(double, double), const double *nume
     auto *x = new double[nx], *analyticSolution = new double[nx], *difAnalyticToNum = new double[nx];
     double sumNum = 0.0, sumDem = 0.0, maxDifAnalyticToNum = 0.0, maxAnalytic = 0.0;
 
-    for (int i = 0; i < nx; i++) {
+    for (int i = 1; i < nx-1; i++) {
         x[i] = domX[0] + i * dx;
         analyticSolution[i] = getAnalyticFuncValue(funcAnalytic, x[i], time);
         difAnalyticToNum[i] = abs(analyticSolution[i] - numericSolution[i]);

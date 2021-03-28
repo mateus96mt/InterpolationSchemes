@@ -326,6 +326,8 @@ void testReadFromArguments(char *argv[], bool showLog = false) {
     }
     double param = stod(argv[16]);
 
+    bool isLogActive = atoi(argv[17]) == 1;
+
     if (showLog) {
         printf("output: %s\n", output);
         printf("equationType: %d\n", equationType);
@@ -347,7 +349,7 @@ void testReadFromArguments(char *argv[], bool showLog = false) {
     auto *solver = new Solver(nx, domX, domT, _initialCondition, uL, uR,
                               _analyticSolution, equationType);
 
-    solver->solve(cfl, v, a, output, scheme, param, false);
+    solver->solve(cfl, v, a, output, scheme, param, isLogActive);
 
     double error = Tools::calculateError(_analyticSolution, solver->getValues()[2], nx, domX, solver->getDx(), domT[1],
                                          Tools::ErrorType::norm2);

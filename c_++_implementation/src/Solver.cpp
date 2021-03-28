@@ -85,7 +85,7 @@ Solver::solve(double _cfl, double _v, double _a, const char *_folderName, double
 
         swap(p, q);
 
-        for (int i = 0; i < nx; i++) {
+        for (int i = 1; i < nx-1; i++) {
 
             double velFaceF = 0.0, velFaceG = 0.0, uF = 0.0, uG = 0.0;
 
