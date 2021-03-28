@@ -26,7 +26,7 @@ def readOutPut(fileName):
     return x, y_exata, y_num             
 
 def solutionOverTimeOneSchemeOneParam(n, name, params_name, scheme_index,\
-                                      param_value, schemes, ylims, xlims, interval = 1):
+                                      param_value, schemes, ylims, xlims, interval = 1, dt = 1):
     
     for i in range(n):
                 
@@ -45,7 +45,15 @@ def solutionOverTimeOneSchemeOneParam(n, name, params_name, scheme_index,\
                      label=r'$' + params_name[scheme_index] +  '=' + str(param_value) + '$')
             
             plt.grid(True, linestyle='--')
-            plt.title('Esquema ' + schemes[scheme_index])
+            
+            if dt!=1:
+                
+                plt.title('Tempo: ' + str(i*dt))
+                
+            else:
+                
+                plt.title('Esquema ' + schemes[scheme_index])
+            
             plt.legend(loc="best")
             plt.xlabel(r'$\mathrm{x}$')
             plt.ylabel(r'$\mathrm{u}$')
@@ -415,33 +423,33 @@ def generateAnalytic(name =  "TOPUS_"):
 
 #solutionOverTime()
     
-param_compar_graficos_TOPUS(xlims = [1.0, 1.9], ylims = [-0.1, 1.1], notPlotCountour = True)
-param_compar_graficos_FSFL(xlims = [1.0, 1.9], ylims = [-0.1, 1.1], notPlotCountour = True)
-param_compar_graficos_SDPUS(xlims = [1.0, 1.9], ylims = [-0.1, 1.1], notPlotCountour = True)
-param_compar_graficos_EPUS(xlims = [1.0, 1.9], ylims = [-0.1, 1.1], notPlotCountour = True)
+#param_compar_graficos_TOPUS(xlims = [1.0, 1.9], ylims = [-0.1, 1.1], notPlotCountour = True)
+#param_compar_graficos_FSFL(xlims = [1.0, 1.9], ylims = [-0.1, 1.1], notPlotCountour = True)
+#param_compar_graficos_SDPUS(xlims = [1.0, 1.9], ylims = [-0.1, 1.1], notPlotCountour = True)
+#param_compar_graficos_EPUS(xlims = [1.0, 1.9], ylims = [-0.1, 1.1], notPlotCountour = True)
     
 #readErrors("erros_cfl_0.05.txt", "ERROS_cfl=0.05", 0.05, n=8)
 
 
 
 
-#n = 3990
-#
-#schemes = ["TOPUS", "FSFL", "SDPUS_C1", "EPUS"]
-#params_name = ["\\alpha", "\\beta", "\\gamma", "\\lambda"]
-#
-#param_value = 2.0
-#
-#scheme_index = 0
-#
-#name = schemes[scheme_index] + "_" + str(param_value)
-#
-#xlims = [0.0, 2.0]
-#
-#ylims = [-0.1, 1.2]
-#
-#solutionOverTimeOneSchemeOneParam(n, name, params_name, scheme_index,\
-#                                      param_value, schemes, ylims, xlims, interval = 100)
+n = 3990
+
+schemes = ["TOPUS", "FSFL", "SDPUS_C1", "EPUS"]
+params_name = ["\\alpha", "\\beta", "\\gamma", "\\lambda"]
+
+param_value = 2.0
+
+scheme_index = 0
+
+name = schemes[scheme_index] + "_" + str(param_value)
+
+xlims = [0.0, 2.0]
+
+ylims = [-0.1, 1.2]
+
+solutionOverTimeOneSchemeOneParam(n, name, params_name, scheme_index,\
+                                      param_value, schemes, ylims, xlims, interval = int(n/10), dt = 0.000251)
 
 
 

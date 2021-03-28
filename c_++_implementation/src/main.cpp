@@ -236,7 +236,7 @@ void testReadFromFile(char *inputFile) {
     solver->solve(solver->getCfl(), solver->getV(), solver->getA(), "OUTPUT", scheme, 2.0, true);
 }
 
-void testReadFromArguments(char *argv[], bool showLog = false) {
+void testReadFromArguments(char *argv[], int c, bool showLog = false) {
 
     char *output = argv[1];
     EquationType equationType = EquationType::none;
@@ -326,7 +326,7 @@ void testReadFromArguments(char *argv[], bool showLog = false) {
     }
     double param = stod(argv[16]);
 
-    bool isLogActive = atoi(argv[17]) == 1;
+    bool isLogActive = c >= 18 && atoi(argv[17]) == 1;
 
     if (showLog) {
         printf("output: %s\n", output);
@@ -361,7 +361,7 @@ int main(int c, char *argv[]) {
 
     char *inputFile, *outputFolder;
 
-    testReadFromArguments(argv);
+    testReadFromArguments(argv, c);
 
 //    switch (c) {
 //        case 3:
