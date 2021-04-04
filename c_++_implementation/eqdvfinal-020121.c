@@ -2,6 +2,56 @@
 #include<stdio.h>
 #include<stdlib.h>
 
+double calculateError(const double *analyticSolution, const double *numericSolution, int nx, int errorType) {
+
+    double *difAnalyticToNum = (double*) malloc((nx)*sizeof(double));;
+    double sumNum = 0.0, sumDem = 0.0, maxDifAnalyticToNum = 0.0, maxAnalytic = 0.0;
+
+    for (int i = 0; i < nx; i++) {
+        difAnalyticToNum[i] = abs(analyticSolution[i] - numericSolution[i]);
+
+        if (difAnalyticToNum[i] > maxDifAnalyticToNum) {
+            maxDifAnalyticToNum = difAnalyticToNum[i];
+        }
+
+        if (analyticSolution[i] > maxAnalytic) {
+            maxAnalytic = analyticSolution[i];
+        }
+
+        switch (errorType) {
+
+            case 1:
+                sumNum += abs(analyticSolution[i] - numericSolution[i]);
+                sumDem += abs(analyticSolution[i]);
+                break;
+
+            case 2:
+                sumNum += pow(analyticSolution[i] - numericSolution[i], 2);
+                sumDem += pow(analyticSolution[i], 2);
+                break;
+
+            case 3:
+                break;
+        }
+
+    }
+
+    switch (errorType) {
+
+        case 1:
+            return sumNum / sumDem;
+
+        case 2:
+            return sqrt(sumNum / sumDem);
+
+        case 3:
+            return maxDifAnalyticToNum / maxAnalytic;
+
+        default:
+            return 0.0;
+    }
+}
+
 int main (int c, char *argv[]) {
    double *x,*phi_in,*phi_exata,*phi_next,*phi,*f, param;
    double dx,dt,CFL,a,b,d,tf,k,f0, fiu,numa,numb,dena,denb,x0,xN;
@@ -28,11 +78,12 @@ int main (int c, char *argv[]) {
    fluxo = atoi(argv[2]);
    param = atof(argv[3]);
    CFL = atof(argv[4]);
+   int errorType = atoi(argv[5]);
 
-   printf("saida: %s\n", argv[1]);
-   printf("fluxo: %d\n", fluxo);
-   printf("param: %lf\n", param);
-   printf("CFL: %.3lf\n", CFL);
+//    printf("saida: %s\n", argv[1]);
+//    printf("fluxo: %d\n", fluxo);
+//    printf("param: %lf\n", param);
+//    printf("CFL: %.3lf\n", CFL);
    
    
    if (fluxo == 1) {
@@ -59,8 +110,8 @@ int main (int c, char *argv[]) {
    dt = CFL*dx; 
    k = tf/dt;
 
-   printf("dt = %f\n", dt);
-   printf("iterations = %d\n", (int)k);
+//    printf("dt = %f\n", dt);
+//    printf("iterations = %d\n", (int)k);
    
    x         = (double*) malloc((N+2)*sizeof(double));
    phi_in    = (double*) malloc((N+2)*sizeof(double));
@@ -386,6 +437,9 @@ int main (int c, char *argv[]) {
    for(j=0;j<=N;j++)
          fprintf(fp1,"%1.5f %1.5f %1.5f\n", x[j], phi_exata[j], phi_next[j]);
      
+   
+   printf("%.10f\n", calculateError(phi_exata, phi_next, N+2, errorType));
+   
    free(x);
    free(phi_in);  
    free(phi);

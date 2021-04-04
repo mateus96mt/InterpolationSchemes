@@ -437,16 +437,16 @@ def generateAnalytic(name =  "TOPUS_"):
 
 #solutionOverTime()
     
-param_compar_graficos_TOPUS("Rafael_2_", xlims = [1.0, 1.9], \
-                            ylims = [-20.0, 20.0], notPlotCountour = True)
-param_compar_graficos_FSFL("Rafael_3_", xlims = [1.0, 1.9], \
-                           ylims = [-20.0, 20.0], notPlotCountour = True)
-param_compar_graficos_SDPUS("Rafael_4_", xlims = [1.0, 1.9], \
-                            ylims = [-20.0, 20.0], notPlotCountour = True)
-param_compar_graficos_EPUS("Rafael_5_",  xlims = [1.0, 1.9], \
-                           ylims = [-20.0, 20.0], notPlotCountour = True)
+param_compar_graficos_TOPUS("TOPUS_", xlims = [-1.1, 1.1], \
+                            ylims = [-1.1, 1.1], notPlotCountour = True)
+param_compar_graficos_FSFL("FSFL_", xlims = [-1.1, 1.1], \
+                           ylims = [-1.1, 1.1], notPlotCountour = True)
+param_compar_graficos_SDPUS("SDPUS_C1_", xlims = [-1.1, 1.1], \
+                            ylims = [-1.1, 1.1], notPlotCountour = True)
+param_compar_graficos_EPUS("EPUS_",  xlims = [-1.1, 1.1], \
+                           ylims = [-1.1, 1.1], notPlotCountour = True)
     
-#readErrors("erros_cfl_0.05.txt", "Rafael_ERROS_cfl=0.05", 0.05, n=8)
+#readErrors("erros_cfl_0.9.txt", "Rafael_ERROS_cfl=0.9", 0.9, n=8)
 
 
 
