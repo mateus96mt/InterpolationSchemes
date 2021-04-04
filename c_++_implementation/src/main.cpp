@@ -79,6 +79,7 @@ double u0(double x, double t, int _case = 2) {
         if ((x > 0.8) && (x <= 2.0)) {
             return 0.0;
         }
+        return 0.0;
     }
 
     if (_case == 2) {

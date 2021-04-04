@@ -18,7 +18,7 @@ def readOutPut(fileName):
     
         str_lines = str_file[i].split('\n')
         str_lines = str_lines[0].split(' ')
-        
+                
         x.append(float(str_lines[0]))
         y_exata.append(float(str_lines[1]))
         y_num.append(float(str_lines[2]))
@@ -92,14 +92,34 @@ def solutionOverTime(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2], n = 56):
                                       param_value, schemes, ylims, xlims)
 
 
-def param_compar_graficos_TOPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2],\
+def testeEntrada(fileName, xlims, ylims, esquema):
+              
+    plt.xlim(xlims)
+        
+    x, y_exata, y_num = readOutPut(fileName)
+            
+    plt.plot(x, y_exata, linewidth=1.0, color='red', label="Solução exata")        
+        
+    plt.plot(x, y_num, '+', color='green', ms=5.0)
+        
+    plt.grid(True, linestyle='--')
+    plt.title('Esquema ' + esquema)
+    plt.legend(loc="best")
+    plt.xlabel(r'$\mathrm{x}$')
+    plt.ylabel(r'$\mathrm{u}$')
+    plt.ylim(ylims)
+    plt.tight_layout()
+    
+    plt.savefig(fileName + '.png', dpi = 200)
+    plt.cla()
+    plt.clf()
+
+def param_compar_graficos_TOPUS(name, xlims = [-0.2, 1.1], ylims = [-1.2, 1.2],\
                                 notPlotCountour = False):
     
     plt.figure(figsize=(8,8))
     plt.xlim(xlims)
-    
-    name = "TOPUS_"
-    
+        
     params = np.linspace(-2.0, 2.0, 3)
     param = params[0]
     
@@ -158,13 +178,11 @@ def param_compar_graficos_TOPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2],\
     plt.cla()
     plt.clf()
     
-def param_compar_graficos_FSFL(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2],\
+def param_compar_graficos_FSFL(name, xlims = [-0.2, 1.1], ylims = [-1.2, 1.2],\
                                notPlotCountour = False):
              
     plt.xlim(xlims)
-    
-    name = "FSFL_"
-    
+        
     params = np.linspace(0.0, 2.0, 3)
     param = params[0]
     
@@ -223,13 +241,11 @@ def param_compar_graficos_FSFL(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2],\
     plt.cla()
     plt.clf()
     
-def param_compar_graficos_EPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2],\
+def param_compar_graficos_EPUS(name, xlims = [-0.2, 1.1], ylims = [-1.2, 1.2],\
                                notPlotCountour = False):
               
     plt.xlim(xlims)
-    
-    name = "EPUS_"
-    
+        
     params = np.linspace(16.0, 95.0, 3)
     param = params[0]
     
@@ -288,13 +304,11 @@ def param_compar_graficos_EPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2],\
     plt.cla()
     plt.clf()
     
-def param_compar_graficos_SDPUS(xlims = [-0.2, 1.1], ylims = [-1.2, 1.2],\
+def param_compar_graficos_SDPUS(name, xlims = [-0.2, 1.1], ylims = [-1.2, 1.2],\
                                 notPlotCountour = False):
               
     plt.xlim(xlims)
-    
-    name = "SDPUS_C1_"
-    
+        
     params = np.linspace(4.0, 12.0, 3)
     param = params[0]
     
@@ -423,36 +437,45 @@ def generateAnalytic(name =  "TOPUS_"):
 
 #solutionOverTime()
     
-#param_compar_graficos_TOPUS(xlims = [1.0, 1.9], ylims = [-0.1, 1.1], notPlotCountour = True)
-#param_compar_graficos_FSFL(xlims = [1.0, 1.9], ylims = [-0.1, 1.1], notPlotCountour = True)
-#param_compar_graficos_SDPUS(xlims = [1.0, 1.9], ylims = [-0.1, 1.1], notPlotCountour = True)
-#param_compar_graficos_EPUS(xlims = [1.0, 1.9], ylims = [-0.1, 1.1], notPlotCountour = True)
+param_compar_graficos_TOPUS("Rafael_2_", xlims = [1.0, 1.9], \
+                            ylims = [-20.0, 20.0], notPlotCountour = True)
+param_compar_graficos_FSFL("Rafael_3_", xlims = [1.0, 1.9], \
+                           ylims = [-20.0, 20.0], notPlotCountour = True)
+param_compar_graficos_SDPUS("Rafael_4_", xlims = [1.0, 1.9], \
+                            ylims = [-20.0, 20.0], notPlotCountour = True)
+param_compar_graficos_EPUS("Rafael_5_",  xlims = [1.0, 1.9], \
+                           ylims = [-20.0, 20.0], notPlotCountour = True)
     
-#readErrors("erros_cfl_0.05.txt", "ERROS_cfl=0.05", 0.05, n=8)
+#readErrors("erros_cfl_0.05.txt", "Rafael_ERROS_cfl=0.05", 0.05, n=8)
 
 
 
 
-n = 3990
+#n = 3990
+#
+#schemes = ["TOPUS", "FSFL", "SDPUS_C1", "EPUS"]
+#params_name = ["\\alpha", "\\beta", "\\gamma", "\\lambda"]
+#
+#param_value = 2.0
+#
+#scheme_index = 0
+#
+#name = schemes[scheme_index] + "_" + str(param_value)
+#
+#xlims = [0.0, 2.0]
+#
+#ylims = [-0.1, 1.2]
+#
+#solutionOverTimeOneSchemeOneParam(n, name, params_name, scheme_index,\
+#                                      param_value, schemes, ylims, xlims, interval = int(n/10), dt = 0.000251)
 
-schemes = ["TOPUS", "FSFL", "SDPUS_C1", "EPUS"]
-params_name = ["\\alpha", "\\beta", "\\gamma", "\\lambda"]
-
-param_value = 2.0
-
-scheme_index = 0
-
-name = schemes[scheme_index] + "_" + str(param_value)
-
-xlims = [0.0, 2.0]
-
-ylims = [-0.1, 1.2]
-
-solutionOverTimeOneSchemeOneParam(n, name, params_name, scheme_index,\
-                                      param_value, schemes, ylims, xlims, interval = int(n/10), dt = 0.000251)
 
 
-
+#testeEntrada("teste_rafael/Eqdv_ADBQUICKEST.dat", [1.0, 1.9], [-0.1, 1.1], "ADBQUICKEST")
+#testeEntrada("teste_rafael/Eqdv_TOPUS_2.00.dat", [1.0, 1.9], [-0.1, 1.1], "TOPUS")
+#testeEntrada("teste_rafael/Eqdv_FSFL_2.00.dat", [1.0, 1.9], [-0.1, 1.1], "FSFL")
+#testeEntrada("teste_rafael/Eqdv_SDPUS_12.00.dat", [1.0, 1.9], [-0.1, 1.1], "SDPUS")
+#testeEntrada("teste_rafael/Eqdv_EPUS_95.00.dat", [1.0, 1.9], [-0.1, 1.1], "EPUS")
 
 
 
