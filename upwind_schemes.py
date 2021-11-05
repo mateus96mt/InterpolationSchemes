@@ -93,8 +93,57 @@ def ADBQUICKEST(PHI_U_norm, cfl):
         
     return PHI_F_norm
     
+def CUBISTA(PHI_U_norm, param):
+    
+    if(PHI_U_norm >= 0.0 and PHI_U_norm<0.375):
+        
+        return 1.75 * PHI_U_norm
+    
+    if(PHI_U_norm >= 0.375 and PHI_U_norm <= 0.75):
+        
+        return (0.75 * PHI_U_norm) + 0.375
+    
+    if(PHI_U_norm > 0.75 and PHI_U_norm <= 1.0):
+        
+        return (0.25 * PHI_U_norm) + 0.75
+    
+    return PHI_U_norm
 
-
+def VONOS(PHI_U_norm, param):
+    
+    if(PHI_U_norm >= 0.0 and PHI_U_norm<(3.0/74.0)):
+        
+        return 10.0 * PHI_U_norm
+    
+    if(PHI_U_norm >= (3.0/74.0) and PHI_U_norm < 0.5):
+        
+        return (0.375 * (1.0 + (2.0*PHI_U_norm)))
+    
+    if(PHI_U_norm >= 0.5 and PHI_U_norm < (2.0/3.0)):
+        
+        return (1.5 * PHI_U_norm)
+    
+    if(PHI_U_norm >= (2.0/3.0) and PHI_U_norm <= 1.0):
+        
+        return 1.0
+    
+    return PHI_U_norm
+    
+def WACEB(PHI_U_norm, param):
+    
+    if(PHI_U_norm >= 0.0 and PHI_U_norm<0.3):
+        
+        return 2.0 * PHI_U_norm
+    
+    if(PHI_U_norm >= 0.3 and PHI_U_norm <= (5.0/6.0)):
+        
+        return (0.75 * PHI_U_norm) + 0.375
+    
+    if(PHI_U_norm > (5.0/6.0) and PHI_U_norm <= 1.0):
+        
+        return 1.0
+    
+    return PHI_U_norm
 
 
 

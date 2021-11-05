@@ -55,4 +55,60 @@ def SDPUS_C1(rf, gamma):
         return ( (4.0*(rf**3)) +\
                  (12*(rf**2))
                 ) / ((1 + rf)**4)
+        
+def ADBQUICKEST(rf, cfl):
+    
+    if rf < 0:
+        
+        return 0;
+    
+    else:
+    
+        return min(
+                  2.0*rf*(1.0-cfl),
+                  (2.0+(cfl**2)-3*abs(cfl)+(1-(cfl**2))*rf)/3.0,
+                  2.0*(1.0-cfl)
+                  )
+        
+def CUBISTA(rf, c1):
+    
+    if rf < 0:
+        
+        return 0;
+    
+    else:
+    
+        return min(
+                  2.0*rf*(1.0-c1),
+                  0.75+0.25*rf,
+                  2*(1.0-c1)
+                  )
  
+def VONOS(rf, param):
+    
+    if rf < 0:
+        
+        return 0;
+    
+    else:
+    
+        return min(
+                  rf,
+                  0.75 + 0.25*rf,
+                  18.0*rf,
+                  2.0
+                  )
+        
+def WACEB(rf, param):
+    
+    if rf < 0:
+        
+        return 0;
+    
+    else:
+    
+        return min(
+                  2*rf,
+                  0.75+0.25*rf,
+                  2.0
+                  )
